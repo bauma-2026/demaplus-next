@@ -6,20 +6,22 @@ const HERO_IMAGE = "/images/hero/o-nas-hero.webp";
 
 export default function AboutHero() {
   return (
-    <section className="relative">
-      <div className="relative h-[34vh] min-h-[300px] sm:h-[36vh] sm:min-h-[340px] lg:h-[38vh] lg:min-h-[380px] w-full overflow-hidden bg-neutral-100">
-       <Image
-  src={HERO_IMAGE}
-  alt="Dema Plus – O nas"
-  fill
-  priority
-  sizes="100vw"
-  className="object-cover"
-  style={{ objectPosition: "50% 35%" }}
-/>
+  <section id="hero" className="relative">
+  <div className="relative h-[56svh] min-h-[360px] w-full overflow-hidden bg-neutral-100 sm:min-h-[460px]">
+    {/* Image layer */}
+    <div ref={mediaRef} className="absolute inset-0 z-0 overflow-hidden">
+      <Image
+        src={featured.image}
+        alt={featured.title}
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+    </div>
 
-<div className="absolute inset-0 z-10 bg-gradient-to-b from-black/42 via-black/26 to-black/14" />
-<div className="absolute inset-0 z-10 bg-gradient-to-l from-black/18 via-black/8 to-transparent" />
+    <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/34 via-black/18 to-black/8" />
+<div className="absolute inset-0 z-10 bg-gradient-to-l from-black/12 via-black/6 to-transparent" />
 
 Če želiš, ti lahko dam še 3 natančne variante: subtle, balanced, dramatic.
 
