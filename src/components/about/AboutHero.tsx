@@ -7,7 +7,7 @@ const HERO_IMAGE = "/images/hero/o-nas-hero.webp";
 export default function AboutHero() {
   return (
     <section className="relative">
-      <div className="relative h-[34vh] min-h-[300px] sm:h-[36vh] sm:min-h-[340px] lg:h-[38vh] lg:min-h-[380px] w-full overflow-hidden bg-neutral-200">
+      <div className="relative h-[34vh] min-h-[300px] sm:h-[36vh] sm:min-h-[340px] lg:h-[38vh] lg:min-h-[380px] w-full overflow-hidden bg-neutral-100">
         <Image
           src={HERO_IMAGE}
           alt="Dema Plus – O nas"

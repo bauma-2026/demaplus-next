@@ -41,19 +41,20 @@ export default function HomeHeroFeatured() {
   const headlineLines = Array.isArray(headline) ? headline : [headline];
 
   return (
-   <section id="hero" className="relative">
-<div className="relative h-[56svh] min-h-[360px] sm:min-h-[460px] w-full overflow-hidden bg-neutral-200">
-   {/* Image layer */}
-<div ref={mediaRef} className="absolute inset-0 z-0 overflow-hidden">
-
-  <Image
-    src={featured.image}
-    alt={featured.title}
-    fill
-    priority
-    sizes="100vw"
-    className="object-cover"
-  />
+ <section id="hero" className="relative">
+  <div className="relative h-[56svh] min-h-[360px] sm:min-h-[460px] w-full overflow-hidden bg-neutral-100">
+    
+    {/* Image layer */}
+    <div ref={mediaRef} className="absolute inset-0 z-0 overflow-hidden">
+   <Image
+  src={featured.image}
+  alt={featured.title}
+  fill
+  priority
+  sizes="100vw"
+  className="object-cover opacity-0 transition-opacity duration-700"
+  onLoad={(e) => e.currentTarget.classList.remove("opacity-0")}
+/>
 
   {/* Cinematic left gradient */}
 <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.42) 0%,rgba(0,0,0,0.22) 35%,rgba(0,0,0,0.04) 55%,transparent 70%)]" />

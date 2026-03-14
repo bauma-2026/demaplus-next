@@ -67,7 +67,7 @@ export default function CookieConsent() {
           <button
             type="button"
             onClick={acceptCookies}
-            className="rounded-full bg-white px-4 py-2 text-sm font-medium text-neutral-900 transition hover:bg-neutral-200"
+            className="rounded-full bg-white px-4 py-2 text-sm font-medium text-neutral-900 transition hover:bg-neutral-100"
           >
             V redu
           </button>
