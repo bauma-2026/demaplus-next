@@ -20,24 +20,24 @@ export default function PageHero({
 }: Props) {
   return (
     <header className={`relative overflow-hidden ${className ?? ""}`}>
-{image && (
-  <div className="absolute inset-0 bg-neutral-100">
-    <Image
-      src={image}
-      alt=""
-      fill
-      priority
-      className="object-cover"
-      sizes="100vw"
-    />
-    <div className="absolute inset-0 bg-black/12" />
-    <div className="absolute inset-0 bg-gradient-to-r from-black/24 via-black/10 to-transparent" />
-  </div>
-)}
+      {image && (
+        <div className="absolute inset-0">
+          <Image
+            src={image}
+            alt=""
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-black/35" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-transparent" />
+        </div>
+      )}
 
       {image ? (
         <div className="relative z-10">
-          <div className="mx-auto max-w-7xl px-5 py-12 sm:py-20">
+          <div className="mx-auto max-w-3xl px-5 py-12 sm:py-20">
             <div
               className={
                 rightSlot
