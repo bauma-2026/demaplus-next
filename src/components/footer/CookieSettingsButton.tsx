@@ -1,12 +1,14 @@
 "use client";
 
 export default function CookieSettingsButton() {
-  function handleOpen() {
+  const handleOpen = () => {
     if (typeof window === "undefined") return;
 
     const w = window as typeof window & {
-      Cookiebot?: { renew?: () => void; show?: () => void };
-      UC_UI?: { showSecondLayer?: () => void; showSettings?: () => void };
+      Cookiebot?: {
+        renew?: () => void;
+        show?: () => void;
+      };
     };
 
     if (w.Cookiebot?.renew) {
@@ -19,18 +21,8 @@ export default function CookieSettingsButton() {
       return;
     }
 
-    if (w.UC_UI?.showSecondLayer) {
-      w.UC_UI.showSecondLayer();
-      return;
-    }
-
-    if (w.UC_UI?.showSettings) {
-      w.UC_UI.showSettings();
-      return;
-    }
-
-    console.warn("Cookie settings API not found on window.");
-  }
+    console.warn("Cookiebot not found on window.");
+  };
 
   return (
     <button
