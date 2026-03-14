@@ -7,7 +7,7 @@ const HERO_IMAGE = "/images/hero/o-nas-hero.webp";
 export default function AboutHero() {
   return (
    <section id="hero" className="relative">
-  <div className="relative h-[56svh] min-h-[360px] w-full overflow-hidden bg-neutral-100 sm:min-h-[460px]">
+  <div className="relative h-[56svh] min-h-[360px] w-full overflow-hidden bg-[#f9f9f9] sm:min-h-[460px]">
     
     {/* Image layer */}
     <div className="absolute inset-0 z-0 overflow-hidden">
