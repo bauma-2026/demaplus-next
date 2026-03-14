@@ -3,25 +3,7 @@
 export default function CookieSettingsButton() {
   const handleOpen = () => {
     if (typeof window === "undefined") return;
-
-    const w = window as typeof window & {
-      Cookiebot?: {
-        renew?: () => void;
-        show?: () => void;
-      };
-    };
-
-    if (w.Cookiebot?.renew) {
-      w.Cookiebot.renew();
-      return;
-    }
-
-    if (w.Cookiebot?.show) {
-      w.Cookiebot.show();
-      return;
-    }
-
-    console.warn("Cookiebot not found on window.");
+    window.dispatchEvent(new CustomEvent("open-cookie-settings"));
   };
 
   return (

@@ -10,32 +10,45 @@ export default function CookieConsent() {
 
   useEffect(() => {
     const accepted = localStorage.getItem("cookiesAccepted");
-    if (!accepted) setVisible(true);
+    if (!accepted) {
+      setVisible(true);
+    }
 
-    setTimeout(() => setMounted(true), 50);
+    const t = window.setTimeout(() => setMounted(true), 50);
+
+    const openSettings = () => {
+      setClosing(false);
+      setVisible(true);
+      window.setTimeout(() => setMounted(true), 20);
+    };
+
+    window.addEventListener("open-cookie-settings", openSettings);
+
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("open-cookie-settings", openSettings);
+    };
   }, []);
 
   const acceptCookies = () => {
     localStorage.setItem("cookiesAccepted", "true");
     setClosing(true);
 
-    setTimeout(() => {
+    window.setTimeout(() => {
       setVisible(false);
-    }, 300); // wait for fade-out animation
+    }, 300);
   };
 
   if (!visible) return null;
 
   return (
     <div
-      className={`fixed bottom-4 left-4 right-4 z-50 sm:left-auto sm:right-6 sm:max-w-md
-      transition-all duration-300 ease-out
-      ${
+      className={`fixed bottom-4 left-4 right-4 z-50 transition-all duration-300 ease-out sm:left-auto sm:right-6 sm:max-w-md ${
         closing
-          ? "opacity-0 translate-y-6"
+          ? "translate-y-6 opacity-0"
           : mounted
-          ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-6"
+          ? "translate-y-0 opacity-100"
+          : "translate-y-6 opacity-0"
       }`}
     >
       <div className="rounded-xl bg-neutral-900 p-5 text-white shadow-lg">
@@ -46,12 +59,13 @@ export default function CookieConsent() {
             href="/piskotki"
             className="underline underline-offset-2 hover:text-white"
           >
-            splošnih pogojih poslovanja
+            politiki piškotkov
           </Link>.
         </p>
 
         <div className="mt-4 flex justify-end">
           <button
+            type="button"
             onClick={acceptCookies}
             className="rounded-full bg-white px-4 py-2 text-sm font-medium text-neutral-900 transition hover:bg-neutral-200"
           >
