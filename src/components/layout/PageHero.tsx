@@ -20,8 +20,8 @@ export default function PageHero({
 }: Props) {
   return (
     <header className={`relative overflow-hidden ${className ?? ""}`}>
-      {image && (
-  <div className="absolute inset-0 bg-neutral-100">
+   {image && (
+  <div className="absolute inset-0 bg-neutral-200">
     <Image
       src={image}
       alt=""
@@ -30,10 +30,6 @@ export default function PageHero({
       className="object-cover"
       sizes="100vw"
     />
-
-    {/* softer overlay */}
-    <div className="absolute inset-0 bg-black/20" />
-    <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-transparent" />
   </div>
 )}
 
