@@ -10,7 +10,7 @@ export default function CookieSettingsButton() {
     <button
       type="button"
       onClick={handleOpen}
-      className="inline-block appearance-none border-0 bg-transparent p-0 m-0 text-left text-sm text-neutral-700 underline underline-offset-4 decoration-neutral-400 transition hover:text-neutral-900 hover:decoration-neutral-700"
+      className="inline-block cursor-pointer appearance-none border-0 bg-transparent p-0 m-0 text-left text-sm text-neutral-700 underline underline-offset-4 decoration-neutral-400 transition hover:text-neutral-900 hover:decoration-neutral-700"
       style={{ WebkitAppearance: "none" }}
     >
       Nastavitve piškotkov
