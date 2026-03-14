@@ -42,18 +42,17 @@ export default function HomeHeroFeatured() {
 
   return (
  <section id="hero" className="relative">
-  <div className="relative h-[56svh] min-h-[360px] sm:min-h-[460px] w-full overflow-hidden bg-neutral-100">
+<div className="relative h-[56svh] min-h-[360px] sm:min-h-[460px] w-full overflow-hidden">
     
     {/* Image layer */}
     <div ref={mediaRef} className="absolute inset-0 z-0 overflow-hidden">
-   <Image
+ <Image
   src={featured.image}
   alt={featured.title}
   fill
   priority
   sizes="100vw"
-  className="object-cover opacity-0 transition-opacity duration-700"
-  onLoad={(e) => e.currentTarget.classList.remove("opacity-0")}
+  className="object-cover"
 />
 
   {/* Cinematic left gradient */}
