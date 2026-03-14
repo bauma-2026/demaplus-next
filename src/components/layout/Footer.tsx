@@ -10,6 +10,7 @@ export default function Footer() {
     <footer className="border-t border-footer bg-footer py-14 sm:py-16">
       <Container>
         <div className="flex flex-col gap-10 py-14 sm:flex-row sm:items-end sm:justify-between">
+          
           {/* Left */}
           <div>
             <Image
@@ -29,8 +30,10 @@ export default function Footer() {
 
           {/* Right */}
           <div className="flex flex-col items-start gap-3 text-sm sm:items-end">
+
             {/* Legal */}
             <div className="flex flex-col items-start gap-2 sm:items-end">
+
               <Link
                 href="/splosni-pogoji-poslovanja"
                 className="inline-block text-left text-neutral-700 underline underline-offset-4 decoration-neutral-400 transition hover:text-neutral-900 hover:decoration-neutral-700"
@@ -45,9 +48,8 @@ export default function Footer() {
                 Politika piškotkov
               </Link>
 
-              <div className="w-fit">
-                <CookieSettingsButton />
-              </div>
+              <CookieSettingsButton />
+
             </div>
 
             {/* Divider */}
@@ -72,6 +74,7 @@ export default function Footer() {
               </a>
             </div>
             */}
+
           </div>
         </div>
       </Container>
