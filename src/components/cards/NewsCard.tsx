@@ -27,16 +27,19 @@ export default function NewsCard({
     >
       {/* Image: “editorial / tok” (bolj široko, manj masivno) */}
      <div className="relative mb-6 aspect-[16/9] w-full overflow-hidden rounded-xl bg-neutral-100">
-     {image ? (
+    {image ? (
   <Image
-  src={image}
-  alt={title}
-  fill
-  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-  placeholder="blur"
-  blurDataURL="/images/blur-placeholder.png"
-  className="object-cover transition duration-300 group-hover:scale-[1.02]"
-/>
+    src={image}
+    alt={title}
+    fill
+    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+    placeholder="blur"
+    blurDataURL="/images/blur-placeholder.png"
+    className="object-cover opacity-0 transition-all duration-700 group-hover:scale-[1.02]"
+    onLoad={(e) => {
+      e.currentTarget.classList.remove("opacity-0");
+    }}
+  />
 ) : null}
       </div>
 
