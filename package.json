@@ -1,0 +1,39 @@
+{
+  "name": "demaplus-next",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
+    "start": "next start",
+    "start:lan": "next start -H 0.0.0.0 -p 3000",
+    "lint": "eslint",
+    "gen:meta": "tsx scripts/gen-project-meta.ts",
+    "gen:meta:wp": "tsx scripts/fetch-wp-meta.ts",
+    "migrate:refimg": "tsx scripts/migrate-reference-images.ts",
+    "fetch:missing": "tsx scripts/fetch-missing-images.ts"
+  },
+  "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "clsx": "^2.1.1",
+    "gsap": "^3.14.2",
+    "next": "^16.2.0-canary.68",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.1",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.24",
+    "cheerio": "^1.2.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "postcss": "^8.5.6",
+    "sharp": "^0.34.5",
+    "tailwindcss": "^4.2.1",
+    "tsx": "^4",
+    "typescript": "^5"
+  }
+}

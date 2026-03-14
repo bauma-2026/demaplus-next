@@ -1,0 +1,816 @@
+import fs from "fs";
+import path from "path";
+import sharp from "sharp";
+
+const PROJECTS_FILE = "src/content/projects.generated.ts";
+const UPLOADS_PUBLIC_DIR = "public/wp-content/uploads";
+const OUT_DIR = "public/reference/thumbs";
+
+// thumb size (4:3)
+const W = 600;
+const H = 450;
+const QUALITY = 78;
+
+function normalizeUploadsUrl(input) {
+  return input.replace(
+    /https?:\/\/(?:www\.)?[^/]+\/wp-content\/uploads/gi,
+    "/wp-content/uploads"
+  );
+}
+
+function stripWpVariants(input) {
+  return input
+    .replace(/-\d+x\d+(?=[^/]*\.(jpg|jpeg|png|webp)\b)/gi, "")
+    .replace(/-scaled(?=[^/]*\.(jpg|jpeg|png|webp)\b)/gi, "");
+}
+
+function toLocalUploadsPath(featuredImageUrl) {
+  const rel = stripWpVariants(normalizeUploadsUrl(featuredImageUrl)); // /wp-content/uploads/...
+  // map to public/wp-content/uploads/...
+  const local = path.join("public", rel);
+  return local;
+}
+
+// Reads projects.generated.ts as text and extracts { slug, featuredImage }
+function readProjectsFromTs() {
+  const code = fs.readFileSync(PROJECTS_FILE, "utf8");
+
+  // Assumes objects contain "slug": "...", and "featuredImage": "..."
+  const blocks = code.split(/\{\s*"/g).map((x) => `{"${x}`); // rough block split
+  const items = [];
+
+  for (const b of blocks) {
+    const slug = (b.match(/"slug"\s*:\s*"([^"]+)"/) || [])[1];
+    const featuredImage = (b.match(/"featuredImage"\s*:\s*"([^"]+)"/) || [])[1];
+
+    if (slug) {
+      items.push({ slug, featuredImage: featuredImage || "" });
+    }
+  }
+
+  // de-dupe by slug (in case split is noisy)
+  const map = new Map();
+  for (const it of items) map.set(it.slug, it);
+  return [...map.values()];
+}
+
+function ensureDir(p) {
+  fs.mkdirSync(p, { recursive: true });
+}
+
+async function main() {
+  ensureDir(OUT_DIR);
+
+  const projects = readProjectsFromTs();
+  const missingSources = [];
+  const noFeatured = [];
+
+  console.log(`Projects found: ${projects.length}`);
+
+  for (const p of projects) {
+    if (!p.featuredImage) {
+      noFeatured.push(p.slug);
+      continue;
+    }
+
+    const srcPath = toLocalUploadsPath(p.featuredImage);
+    const outPath = path.join(OUT_DIR, `${p.slug}.webp`);
+
+    if (!fs.existsSync(srcPath)) {
+      missingSources.push({ slug: p.slug, srcPath });
+      continue;
+    }
+
+    try {
+      await sharp(srcPath)
+        .resize(W, H, { fit: "cover", position: "centre" })
+        .webp({ quality: QUALITY })
+        .toFile(outPath);
+
+      process.stdout.write(".");
+    } catch (e) {
+      missingSources.push({ slug: p.slug, srcPath, error: String(e) });
+    }
+  }
+
+  console.log("\nDone.");
+  console.log(`Thumbs output: ${OUT_DIR}`);
+
+  if (noFeatured.length) {
+    console.log("\nNo featuredImage (manual):");
+    console.log(noFeatured.join("\n"));
+  }
+
+  if (missingSources.length) {
+    console.log("\nMissing source images (manual fix):");
+    for (const m of missingSources) {
+      console.log(`- ${m.slug}: ${m.srcPath}${m.error ? ` (${m.error})` : ""}`);
+    }
+    console.log(
+      "\nTip: te manjkajoče boš najbrž uredil tako, da najdeš pravi original v uploads in ga preimenuješ/zgeneriraš."
+    );
+  }
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
+ GET /project 200 in 48ms (compile: 6ms, render: 42ms)
+ GET /project 200 in 42ms (compile: 4ms, render: 38ms)
+ GET /reference/salon-pohistva-in-hotel-nox 200 in 62ms (compile: 9ms, generate-params: 5ms, render: 53ms)
+ GET /reference/hotel-cubo 200 in 134ms (compile: 99ms, generate-params: 4ms, render: 35ms)
+ GET /reference/salon-pohistva-in-hotel-nox 200 in 12ms (compile: 909µs, generate-params: 21µs, render: 11ms)
+ GET /wp-content/uploads/2022/03/nox-1.jpg 404 in 25ms (compile: 1815µs, render: 23ms)
+ GET /wp-content/uploads/2022/03/hotel-cubo.jpg 404 in 19ms (compile: 1394µs, render: 18ms)
+^C
+bauma@TL-WA855RE demaplus-next % mkdir -p public/wp-content/uploads
+bauma@TL-WA855RE demaplus-next % npm run dev
+
+> demaplus-next@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.101:3000
+
+✓ Starting...
+✓ Ready in 633ms
+ GET /reference/salon-pohistva-in-hotel-nox 200 in 521ms (compile: 401ms, generate-params: 209ms, render: 120ms)
+ GET /wp-content/uploads/2022/03/nox-1.jpg 404 in 69ms (compile: 39ms, render: 29ms)
+ GET /reference/salon-pohistva-in-hotel-nox 200 in 59ms (compile: 9ms, generate-params: 4ms, render: 50ms)
+ GET /wp-content/uploads/2022/03/nox-1.jpg 404 in 44ms (compile: 3ms, render: 41ms)
+ GET /reference/hotel-cubo 200 in 40ms (compile: 5ms, generate-params: 3ms, render: 34ms)
+ GET /wp-content/uploads/2022/03/hotel-cubo.jpg 404 in 29ms (compile: 1779µs, render: 27ms)
+ GET /reference/salon-pohistva-in-hotel-nox 200 in 61ms (compile: 16ms, generate-params: 6ms, render: 44ms)
+ GET /project 200 in 74ms (compile: 42ms, render: 32ms)
+ GET /reference/hotel-cubo 200 in 36ms (compile: 10ms, generate-params: 4ms, render: 27ms)
+ GET /reference/vila-madeleine 200 in 37ms (compile: 8ms, generate-params: 3ms, render: 29ms)
+ GET /reference/izvedba-obnove-stavbe-vila-zlatica-v-ljubljani 200 in 34ms (compile: 10ms, generate-params: 4ms, render: 25ms)
+ GET /reference/izvedba-gradbeno-obrtniskih-in-instalacijskih-del-ter-zunanje-ureditve-pri-gradnji-objekta-na-stolbi-8-v-ljubljani 200 in 38ms (compile: 9ms, generate-params: 4ms, render: 29ms)
+ GET /reference/center-obala-debeli-rtic 200 in 32ms (compile: 7ms, generate-params: 3ms, render: 25ms)
+ GET /reference/pionirski-dom-art-center 200 in 34ms (compile: 7ms, generate-params: 3ms, render: 27ms)
+ GET /reference/hotel-cubo 200 in 103ms (compile: 49ms, generate-params: 1825µs, render: 54ms)
+ GET /reference/pionirski-dom-art-center 200 in 23ms (compile: 1776µs, generate-params: 14µs, render: 22ms)
+ GET /reference/pionirski-dom-art-center 200 in 150ms (compile: 11ms, generate-params: 5ms, render: 139ms)
+ GET /reference/pionirski-dom-art-center 200 in 60ms (compile: 8ms, generate-params: 4ms, render: 51ms)
+ GET /reference/pionirski-dom-art-center 200 in 66ms (compile: 16ms, generate-params: 5ms, render: 50ms)
+ GET /reference/pionirski-dom-art-center 200 in 47ms (compile: 6ms, generate-params: 3ms, render: 41ms)
+ GET /reference/hotel-cubo 200 in 98ms (compile: 49ms, generate-params: 1388µs, render: 50ms)
+ GET /reference/pionirski-dom-art-center 200 in 25ms (compile: 1875µs, generate-params: 33µs, render: 23ms)
+ GET /wp-content/uploads/2022/03/PIONIRSKI-DOM%E2%80%93ART-CENTER-3.jpg 404 in 25ms (compile: 7ms, render: 18ms)
+ GET /reference/pionirski-dom-art-center 200 in 114ms (compile: 7ms, generate-params: 3ms, render: 107ms)
+ GET /wp-content/uploads/2022/03/PIONIRSKI-DOM%E2%80%93ART-CENTER-3.jpg 404 in 25ms (compile: 7ms, render: 18ms)
+ GET /reference/svicarija 200 in 39ms (compile: 13ms, generate-params: 6ms, render: 26ms)
+ GET /reference/izvedba-goi-del-ter-zu-za-objekt-cetrtne-skupnosti-golovec-v-ljubljani 200 in 37ms (compile: 9ms, generate-params: 4ms, render: 28ms)
+ GET /reference/hisa-soncek-vincarjeva 200 in 38ms (compile: 11ms, generate-params: 4ms, render: 27ms)
+ GET /wp-content/uploads/2022/03/HISA-SONCEK-2.jpg 404 in 29ms (compile: 1991µs, render: 27ms)
+ GET /reference/gradnja-vrtca-v-bohinjski-bistrici 200 in 35ms (compile: 9ms, generate-params: 4ms, render: 26ms)
+ GET /wp-content/uploads/2023/06/Bohinj-Gradnja-vrtca-v-Bohinjski-Bistric-1.jpg 404 in 26ms (compile: 1756µs, render: 24ms)
+ GET /reference/projektiranje-in-gradnja-montaznega-vrtca-grgar 200 in 34ms (compile: 7ms, generate-params: 3ms, render: 28ms)
+ GET /reference/projektiranje-in-izgradnja-montaznega-lesenega-stanovanjsko-poslovnega-kompleksa-polje-iv 200 in 41ms (compile: 10ms, generate-params: 4ms, render: 31ms)
+ GET /reference/zmajev-brlog-na-ljubljanskem-gradu 200 in 36ms (compile: 8ms, generate-params: 3ms, render: 28ms)
+ GET /reference/hribarjeva-dvorana-na-ljubljanskem-gradu 200 in 34ms (compile: 8ms, generate-params: 3ms, render: 27ms)
+ GET /project 200 in 129ms (compile: 80ms, render: 49ms)
+ GET /reference/novogradnja-objekta-vila-rozna-dolina-condominium 200 in 45ms (compile: 13ms, generate-params: 6ms, render: 32ms)
+ GET /reference/hotel-cubo 200 in 111ms (compile: 55ms, generate-params: 2ms, render: 56ms)
+ GET /reference/novogradnja-objekta-vila-rozna-dolina-condominium 200 in 21ms (compile: 931µs, generate-params: 19µs, render: 20ms)
+⨯ ReferenceError: rewriteUploads is not defined
+    at ProjectDetail (src/app/reference/[slug]/page.tsx:130:16)
+  128 |   const title = decodeHtmlEntities(project.title) ?? project.title;
+  129 |
+> 130 |   const html = rewriteUploads((project.contentHtml ?? "").trim());
+      |                ^
+  131 |
+  132 |   const featuredImage = project.featuredImage
+  133 |     ? rewriteUploads(project.featuredImage) {
+  digest: '295989839'
+}
+⨯ ReferenceError: rewriteUploads is not defined
+    at ProjectDetail (src/app/reference/[slug]/page.tsx:130:16)
+  128 |   const title = decodeHtmlEntities(project.title) ?? project.title;
+  129 |
+> 130 |   const html = rewriteUploads((project.contentHtml ?? "").trim());
+      |                ^
+  131 |
+  132 |   const featuredImage = project.featuredImage
+  133 |     ? rewriteUploads(project.featuredImage) {
+  digest: '295989839'
+}
+ GET /reference/hotel-cubo 200 in 106ms (compile: 53ms, generate-params: 3ms, render: 53ms)
+ GET /reference/novogradnja-objekta-vila-rozna-dolina-condominium 200 in 11ms (compile: 758µs, generate-params: 9µs, render: 10ms)
+✓ Compiled in 68ms
+ GET /reference/hotel-cubo 200 in 196ms (compile: 55ms, generate-params: 2ms, render: 141ms)
+ GET /reference/novogradnja-objekta-vila-rozna-dolina-condominium 200 in 195ms (compile: 163ms, generate-params: 9µs, render: 33ms)
+ GET /project 200 in 72ms (compile: 28ms, render: 44ms)
+ GET /reference/hotel-cubo 200 in 94ms (compile: 53ms, generate-params: 3ms, render: 41ms)
+ GET /reference/novogradnja-objekta-vila-rozna-dolina-condominium 200 in 18ms (compile: 745µs, generate-params: 8µs, render: 17ms)
+ GET /reference/hotel-cubo 200 in 105ms (compile: 63ms, generate-params: 1660µs, render: 41ms)
+ GET /reference/novogradnja-objekta-vila-rozna-dolina-condominium 200 in 11ms (compile: 1060µs, generate-params: 10µs, render: 10ms)
+ GET /reference/novogradnja-objekta-vila-rozna-dolina-condominium 200 in 151ms (compile: 27ms, generate-params: 13ms, render: 124ms)
+ GET /project 200 in 45ms (compile: 6ms, render: 39ms)
+✓ Compiled in 101ms
+ GET /reference/hotel-cubo 200 in 110ms (compile: 88ms, generate-params: 2ms, render: 22ms)
+ GET /project 200 in 114ms (compile: 7ms, render: 107ms)
+ GET /reference/novogradnja-objekta-vila-rozna-dolina-condominium 200 in 52ms (compile: 21ms, generate-params: 7ms, render: 30ms)
+ GET /reference/hotel-cubo 200 in 30ms (compile: 7ms, generate-params: 3ms, render: 23ms)
+✓ Compiled in 302ms
+ GET /reference/novogradnja-objekta-vila-rozna-dolina-condominium 200 in 12ms (compile: 750µs, generate-params: 10µs, render: 11ms)
+ GET /project 200 in 125ms (compile: 89ms, render: 36ms)
+ GET /wp-content/uploads/2022/03/vila-rozna-dolina-400x300.jpg 404 in 640ms (compile: 3ms, render: 636ms)
+ GET /wp-content/uploads/2022/03/nox-1-400x300.jpg 404 in 641ms (compile: 11ms, render: 630ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/vila-rozna-dolina-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/nox-1-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/hotel-cubo-400x300.jpg 404 in 618ms (compile: 597ms, render: 20ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/hotel-cubo-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/cetrtna-skupnost-golovec-400x300.jpg 404 in 39ms (compile: 5ms, render: 34ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/cetrtna-skupnost-golovec-400x300.jpg received null
+ GET /wp-content/uploads/2023/06/vrtec-grgar-3-400x300.jpg 404 in 65ms (compile: 6ms, render: 59ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2023/06/vrtec-grgar-3-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/polje-IV-1-400x300.jpg 404 in 65ms (compile: 27ms, render: 38ms)
+ GET /wp-content/uploads/2022/03/zmajev-brlog-lj-grad-400x300.jpg 404 in 66ms (compile: 36ms, render: 29ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/polje-IV-1-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/zmajev-brlog-lj-grad-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/hribarjeva-dvorana-ljubljanski-grad-400x300.jpg 404 in 75ms (compile: 10ms, render: 65ms)
+ GET /wp-content/uploads/2022/03/MUZEJ-IN-PREZENTACIJA-LUTK-NA-LJUBLJANSKEM-GRADU-400x300.jpg 404 in 75ms (compile: 26ms, render: 49ms)
+ GET /wp-content/uploads/2022/03/porocna-dvorana-lj-grad-400x300.jpg 404 in 74ms (compile: 36ms, render: 38ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/hribarjeva-dvorana-ljubljanski-grad-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/MUZEJ-IN-PREZENTACIJA-LUTK-NA-LJUBLJANSKEM-GRADU-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/porocna-dvorana-lj-grad-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/DRUZINSKI-CENTER-MALA-ULICA-400x300.jpg 404 in 44ms (compile: 3ms, render: 40ms)
+ GET /wp-content/uploads/2022/03/SOLSKI-HOTEL-ASTORIA-BLED-400x300.jpg 404 in 45ms (compile: 15ms, render: 30ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/DRUZINSKI-CENTER-MALA-ULICA-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/SOLSKI-HOTEL-ASTORIA-BLED-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/zd-slovenska-bistrica-400x300.jpg 404 in 56ms (compile: 8ms, render: 48ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/zd-slovenska-bistrica-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/dso-lj-vic-400x300.jpg 404 in 57ms (compile: 34ms, render: 23ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/dso-lj-vic-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/os-nove-fuzine-3-400x300.jpg 404 in 27ms (compile: 1532µs, render: 25ms)
+ GET /wp-content/uploads/2022/03/sportni-center-luce-400x300.jpg 404 in 27ms (compile: 13ms, render: 14ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/os-nove-fuzine-3-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/sportni-center-luce-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/sportna-dvorana-podmezakla-1-400x300.jpg 404 in 59ms (compile: 9ms, render: 50ms)
+ GET /wp-content/uploads/2022/03/sportni-park-kodeljevo-400x300.jpg 404 in 59ms (compile: 24ms, render: 34ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/sportna-dvorana-podmezakla-1-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/sportni-park-kodeljevo-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/telovadnica-os-branik-400x300.jpg 404 in 21ms (compile: 1785µs, render: 19ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/telovadnica-os-branik-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/os-nove-fuzine-400x300.jpg 404 in 53ms (compile: 8ms, render: 44ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/os-nove-fuzine-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/os-slovenj-gradec-400x300.jpg 404 in 53ms (compile: 31ms, render: 22ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/os-slovenj-gradec-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/os-vide-pregarc-400x300.jpg 404 in 76ms (compile: 10ms, render: 66ms)
+ GET /wp-content/uploads/2022/03/os-piran-400x300.jpg 404 in 75ms (compile: 25ms, render: 50ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/os-vide-pregarc-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/os-piran-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/solski-center-ljubljana-askerceva-400x300.jpg 404 in 75ms (compile: 56ms, render: 19ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/solski-center-ljubljana-askerceva-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/os-cerkno-400x300.jpg 404 in 41ms (compile: 2ms, render: 39ms)
+ GET /wp-content/uploads/2022/03/os-maks-pecar-400x300.jpg 404 in 42ms (compile: 10ms, render: 32ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/os-cerkno-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/os-maks-pecar-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/vrtec-sentvid-1-400x300.jpg 404 in 43ms (compile: 26ms, render: 17ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/vrtec-sentvid-1-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/vrtec-otona-zupancica-2-400x300.jpg 404 in 45ms (compile: 4ms, render: 42ms)
+ GET /wp-content/uploads/2022/03/vrtec-dornberk-1-400x300.jpg 404 in 45ms (compile: 16ms, render: 29ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/vrtec-otona-zupancica-2-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/vrtec-dornberk-1-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/vrtec-sentjernej-1-400x300.jpg 404 in 14ms (compile: 1247µs, render: 13ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/vrtec-sentjernej-1-400x300.jpg received null
+ GET /project 200 in 230ms (compile: 22ms, render: 209ms)
+ GET /wp-content/uploads/2022/03/cetrtna-skupnost-golovec-400x300.jpg 404 in 41ms (compile: 20ms, render: 21ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/cetrtna-skupnost-golovec-400x300.jpg received null
+ GET /wp-content/uploads/2023/06/vrtec-grgar-3-400x300.jpg 404 in 87ms (compile: 6ms, render: 81ms)
+ GET /wp-content/uploads/2022/03/polje-IV-1-400x300.jpg 404 in 87ms (compile: 13ms, render: 74ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2023/06/vrtec-grgar-3-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/polje-IV-1-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/zmajev-brlog-lj-grad-400x300.jpg 404 in 89ms (compile: 34ms, render: 54ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/zmajev-brlog-lj-grad-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/hribarjeva-dvorana-ljubljanski-grad-400x300.jpg 404 in 90ms (compile: 49ms, render: 41ms)
+ GET /wp-content/uploads/2022/03/MUZEJ-IN-PREZENTACIJA-LUTK-NA-LJUBLJANSKEM-GRADU-400x300.jpg 404 in 91ms (compile: 57ms, render: 34ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/hribarjeva-dvorana-ljubljanski-grad-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/MUZEJ-IN-PREZENTACIJA-LUTK-NA-LJUBLJANSKEM-GRADU-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/porocna-dvorana-lj-grad-400x300.jpg 404 in 18ms (compile: 1068µs, render: 17ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/porocna-dvorana-lj-grad-400x300.jpg received null
+ GET /project 200 in 107ms (compile: 9ms, render: 99ms)
+ GET /wp-content/uploads/2022/03/cetrtna-skupnost-golovec-400x300.jpg 404 in 54ms (compile: 3ms, render: 51ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/cetrtna-skupnost-golovec-400x300.jpg received null
+ GET /wp-content/uploads/2023/06/vrtec-grgar-3-400x300.jpg 404 in 44ms (compile: 5ms, render: 39ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2023/06/vrtec-grgar-3-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/polje-IV-1-400x300.jpg 404 in 51ms (compile: 19ms, render: 32ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/polje-IV-1-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/zmajev-brlog-lj-grad-400x300.jpg 404 in 51ms (compile: 16ms, render: 34ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/zmajev-brlog-lj-grad-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/hribarjeva-dvorana-ljubljanski-grad-400x300.jpg 404 in 46ms (compile: 5ms, render: 41ms)
+ GET /wp-content/uploads/2022/03/MUZEJ-IN-PREZENTACIJA-LUTK-NA-LJUBLJANSKEM-GRADU-400x300.jpg 404 in 47ms (compile: 12ms, render: 35ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/hribarjeva-dvorana-ljubljanski-grad-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/MUZEJ-IN-PREZENTACIJA-LUTK-NA-LJUBLJANSKEM-GRADU-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/porocna-dvorana-lj-grad-400x300.jpg 404 in 28ms (compile: 4ms, render: 24ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/porocna-dvorana-lj-grad-400x300.jpg received null
+ GET /project 200 in 135ms (compile: 15ms, render: 120ms)
+ GET /wp-content/uploads/2022/03/cetrtna-skupnost-golovec-400x300.jpg 404 in 61ms (compile: 3ms, render: 57ms)
+ GET /wp-content/uploads/2023/06/vrtec-grgar-3-400x300.jpg 404 in 62ms (compile: 14ms, render: 48ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/cetrtna-skupnost-golovec-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2023/06/vrtec-grgar-3-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/polje-IV-1-400x300.jpg 404 in 86ms (compile: 35ms, render: 51ms)
+ GET /wp-content/uploads/2022/03/zmajev-brlog-lj-grad-400x300.jpg 404 in 58ms (compile: 16ms, render: 42ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/polje-IV-1-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/zmajev-brlog-lj-grad-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/hribarjeva-dvorana-ljubljanski-grad-400x300.jpg 404 in 71ms (compile: 3ms, render: 68ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/hribarjeva-dvorana-ljubljanski-grad-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/porocna-dvorana-lj-grad-400x300.jpg 404 in 73ms (compile: 41ms, render: 32ms)
+ GET /wp-content/uploads/2022/03/MUZEJ-IN-PREZENTACIJA-LUTK-NA-LJUBLJANSKEM-GRADU-400x300.jpg 404 in 73ms (compile: 55ms, render: 18ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/porocna-dvorana-lj-grad-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/MUZEJ-IN-PREZENTACIJA-LUTK-NA-LJUBLJANSKEM-GRADU-400x300.jpg received null
+ GET /reference/gradnja-vrtca-v-bohinjski-bistrici 200 in 40ms (compile: 12ms, generate-params: 6ms, render: 28ms)
+ GET /wp-content/uploads/2023/06/Bohinj-Gradnja-vrtca-v-Bohinjski-Bistric-1.jpg 404 in 22ms (compile: 1646µs, render: 20ms)
+ GET /project 200 in 53ms (compile: 4ms, render: 48ms)
+ GET /wp-content/uploads/2022/03/vila-rozna-dolina-400x300.jpg 404 in 47ms (compile: 3ms, render: 44ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/vila-rozna-dolina-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/nox-1-400x300.jpg 404 in 48ms (compile: 15ms, render: 32ms)
+ GET /wp-content/uploads/2022/03/hotel-cubo-400x300.jpg 404 in 49ms (compile: 29ms, render: 20ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/nox-1-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/hotel-cubo-400x300.jpg received null
+ GET /reference/novogradnja-objekta-vila-rozna-dolina-condominium 200 in 34ms (compile: 9ms, generate-params: 4ms, render: 25ms)
+ GET /wp-content/uploads/2022/03/vila-rozna-dolina-400x300.jpg 404 in 66ms (compile: 11ms, render: 55ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/vila-rozna-dolina-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/nox-1-400x300.jpg 404 in 66ms (compile: 29ms, render: 37ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/nox-1-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/hotel-cubo-400x300.jpg 404 in 64ms (compile: 42ms, render: 23ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/hotel-cubo-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/cetrtna-skupnost-golovec-400x300.jpg 404 in 44ms (compile: 6ms, render: 38ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/cetrtna-skupnost-golovec-400x300.jpg received null
+ GET /wp-content/uploads/2023/06/vrtec-grgar-3-400x300.jpg 404 in 70ms (compile: 10ms, render: 59ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2023/06/vrtec-grgar-3-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/polje-IV-1-400x300.jpg 404 in 70ms (compile: 31ms, render: 39ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/polje-IV-1-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/zmajev-brlog-lj-grad-400x300.jpg 404 in 68ms (compile: 45ms, render: 23ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/zmajev-brlog-lj-grad-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/hribarjeva-dvorana-ljubljanski-grad-400x300.jpg 404 in 52ms (compile: 3ms, render: 49ms)
+ GET /wp-content/uploads/2022/03/MUZEJ-IN-PREZENTACIJA-LUTK-NA-LJUBLJANSKEM-GRADU-400x300.jpg 404 in 53ms (compile: 14ms, render: 39ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/hribarjeva-dvorana-ljubljanski-grad-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/MUZEJ-IN-PREZENTACIJA-LUTK-NA-LJUBLJANSKEM-GRADU-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/porocna-dvorana-lj-grad-400x300.jpg 404 in 56ms (compile: 36ms, render: 21ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/porocna-dvorana-lj-grad-400x300.jpg received null
+ GET /wp-content/uploads/2022/03/DRUZINSKI-CENTER-MALA-ULICA-400x300.jpg 404 in 53ms (compile: 9ms, render: 45ms)
+ GET /wp-content/uploads/2022/03/SOLSKI-HOTEL-ASTORIA-BLED-400x300.jpg 404 in 53ms (compile: 22ms, render: 31ms)
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/DRUZINSKI-CENTER-MALA-ULICA-400x300.jpg received null
+⨯ The requested resource isn't a valid image for /wp-content/uploads/2022/03/SOLSKI-HOTEL-ASTORIA-BLED-400x300.jpg received null
+^C
+bauma@TL-WA855RE demaplus-next % mkdir -p public/reference/thumbs
+bauma@TL-WA855RE demaplus-next % npm run dev
+
+> demaplus-next@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.101:3000
+
+✓ Starting...
+✓ Ready in 614ms
+ GET /project 200 in 529ms (compile: 395ms, render: 134ms)
+ GET /reference/thumbs/svicarija.webp 404 in 122ms (compile: 33ms, render: 90ms)
+ GET /reference/thumbs/pionirski-dom-art-center.webp 404 in 194ms (compile: 44ms, render: 151ms)
+ GET /reference/thumbs/izvedba-gradbeno-obrtniskih-in-instalacijskih-del-ter-zunanje-ureditve-pri-gradnji-objekta-na-stolbi-8-v-ljubljani.webp 404 in 198ms (compile: 53ms, render: 145ms)
+ GET /reference/thumbs/center-obala-debeli-rtic.webp 404 in 199ms (compile: 59ms, render: 139ms)
+ GET /reference/thumbs/vila-madeleine.webp 404 in 202ms (compile: 70ms, render: 132ms)
+ GET /reference/thumbs/izvedba-obnove-stavbe-vila-zlatica-v-ljubljani.webp 404 in 202ms (compile: 75ms, render: 128ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/pionirski-dom-art-center.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/svicarija.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/izvedba-gradbeno-obrtniskih-in-instalacijskih-del-ter-zunanje-ureditve-pri-gradnji-objekta-na-stolbi-8-v-ljubljani.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/center-obala-debeli-rtic.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/vila-madeleine.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/izvedba-obnove-stavbe-vila-zlatica-v-ljubljani.webp received null
+ GET /reference/thumbs/izvedba-goi-del-ter-zu-za-objekt-cetrtne-skupnosti-golovec-v-ljubljani.webp 404 in 57ms (compile: 3ms, render: 54ms)
+ GET /reference/thumbs/hisa-soncek-vincarjeva.webp 404 in 58ms (compile: 11ms, render: 47ms)
+ GET /reference/thumbs/gradnja-vrtca-v-bohinjski-bistrici.webp 404 in 59ms (compile: 16ms, render: 42ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/izvedba-goi-del-ter-zu-za-objekt-cetrtne-skupnosti-golovec-v-ljubljani.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/hisa-soncek-vincarjeva.webp received null
+ GET /reference/thumbs/projektiranje-in-gradnja-montaznega-vrtca-grgar.webp 404 in 61ms (compile: 43ms, render: 17ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/gradnja-vrtca-v-bohinjski-bistrici.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/projektiranje-in-gradnja-montaznega-vrtca-grgar.webp received null
+ GET /reference/thumbs/projektiranje-in-izgradnja-montaznega-lesenega-stanovanjsko-poslovnega-kompleksa-polje-iv.webp 404 in 26ms (compile: 5ms, render: 21ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/projektiranje-in-izgradnja-montaznega-lesenega-stanovanjsko-poslovnega-kompleksa-polje-iv.webp received null
+ GET /reference/thumbs/zmajev-brlog-na-ljubljanskem-gradu.webp 404 in 26ms (compile: 12ms, render: 14ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/zmajev-brlog-na-ljubljanskem-gradu.webp received null
+ GET /reference/thumbs/hribarjeva-dvorana-na-ljubljanskem-gradu.webp 404 in 35ms (compile: 4ms, render: 31ms)
+ GET /reference/thumbs/muzej-in-prezentacija-lutk-na-ljubljanskem-gradu.webp 404 in 36ms (compile: 9ms, render: 27ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/hribarjeva-dvorana-na-ljubljanskem-gradu.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/muzej-in-prezentacija-lutk-na-ljubljanskem-gradu.webp received null
+ GET /reference/thumbs/porocne-dvorane-na-ljubljanskem-gradu.webp 404 in 37ms (compile: 21ms, render: 16ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/porocne-dvorane-na-ljubljanskem-gradu.webp received null
+ GET /reference/hotel-cubo 200 in 346ms (compile: 264ms, generate-params: 229ms, render: 82ms)
+ GET /reference/gradnja-vrtca-v-bohinjski-bistrici 200 in 35ms (compile: 7ms, generate-params: 3ms, render: 28ms)
+ GET /wp-content/uploads/2023/06/Bohinj-Gradnja-vrtca-v-Bohinjski-Bistric-1.jpg 404 in 30ms (compile: 4ms, render: 26ms)
+ GET /reference/projektiranje-in-gradnja-montaznega-vrtca-grgar 200 in 42ms (compile: 13ms, generate-params: 5ms, render: 28ms)
+^C
+bauma@TL-WA855RE demaplus-next % node -e "const fs=require('fs'); const p=require('./src/content/projects.generated'); const have=new Set(fs.readdirSync('public/reference/thumbs').filter(f=>f.endsWith('.webp')).map(f=>f.replace('.webp',''))); const missing=p.projects? p.projects : p; const arr=(missing.map(x=>x.slug).filter(slug=>!have.has(slug))); console.log('Missing thumbs:', arr.length); console.log(arr.join('\n'));"
+bauma@TL-WA855RE demaplus-next % node -e "const fs=require('fs'); const p=require('./src/content/projects.generated'); const have=new Set(fs.readdirSync('public/reference/thumbs').filter(f=>f.endsWith('.webp')).map(f=>f.replace('.webp',''))); const missing=p.projects? p.projects : p; const arr=(missing.map(x=>x.slug).filter(slug=>!have.has(slug))); console.log('Missing thumbs:', arr.length); console.log(arr.join('\n'));"
+zsh: event not found: have.has(slug)))
+bauma@TL-WA855RE demaplus-next % node -e 'const fs=require("fs"); const p=require("./src/content/projects.generated"); const have=new Set(fs.readdirSync("public/reference/thumbs").filter(f=>f.endsWith(".webp")).map(f=>f.replace(".webp",""))); const data=Array.isArray(p)?p:p.projects; const arr=data.map(x=>x.slug).filter(slug=>!have.has(slug)); console.log("Missing thumbs:", arr.length); console.log(arr.join("\n"));'
+node:internal/modules/cjs/loader:1458
+  throw err;
+  ^
+
+Error: Cannot find module './src/content/projects.generated'
+Require stack:
+- /Users/bauma/demaplus-next/[eval]
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1455:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1065:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1070:22)
+    at Module._load (node:internal/modules/cjs/loader:1241:25)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1555:12)
+    at require (node:internal/modules/helpers:152:16)
+    at [eval]:1:33
+    at runScriptInThisContext (node:internal/vm:219:10)
+    at node:internal/process/execution:451:12 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [ '/Users/bauma/demaplus-next/[eval]' ]
+}
+
+Node.js v25.6.1
+bauma@TL-WA855RE demaplus-next %
+bauma@TL-WA855RE demaplus-next % ls src/content | grep projects
+projects.extra.ts
+projects.generated.ts
+projects.manual.ts
+projects.meta.generated.ts
+projects.meta.ts
+projects.ts
+projects.tsx
+bauma@TL-WA855RE demaplus-next % node -e 'const fs=require("fs"); const code=fs.readFileSync("src/content/projects.generated.ts","utf8"); const slugs=[...code.matchAll(/"slug"\s*:\s*"([^"]+)"/g)].map(m=>m[1]); const have=new Set(fs.readdirSync("public/reference/thumbs",{withFileTypes:true}).filter(d=>d.isFile()&&d.name.endsWith(".webp")).map(d=>d.name.replace(".webp",""))); const missing=slugs.filter(s=>!have.has(s)); console.log("Projects:", slugs.length); console.log("Missing thumbs:", missing.length); console.log(missing.join("\n"));'
+Projects: 46
+Missing thumbs: 46
+novogradnja-objekta-vila-rozna-dolina-condominium
+salon-pohistva-in-hotel-nox
+hotel-cubo
+vila-madeleine
+izvedba-obnove-stavbe-vila-zlatica-v-ljubljani
+izvedba-gradbeno-obrtniskih-in-instalacijskih-del-ter-zunanje-ureditve-pri-gradnji-objekta-na-stolbi-8-v-ljubljani
+center-obala-debeli-rtic
+pionirski-dom-art-center
+svicarija
+izvedba-goi-del-ter-zu-za-objekt-cetrtne-skupnosti-golovec-v-ljubljani
+hisa-soncek-vincarjeva
+gradnja-vrtca-v-bohinjski-bistrici
+projektiranje-in-gradnja-montaznega-vrtca-grgar
+projektiranje-in-izgradnja-montaznega-lesenega-stanovanjsko-poslovnega-kompleksa-polje-iv
+zmajev-brlog-na-ljubljanskem-gradu
+hribarjeva-dvorana-na-ljubljanskem-gradu
+muzej-in-prezentacija-lutk-na-ljubljanskem-gradu
+porocne-dvorane-na-ljubljanskem-gradu
+pokrito-igrisce-druzinski-center-mala-ulica
+solski-hotel-astoria-bled
+siritev-pokopalisca-vic-goi-dela
+zdravstveni-dom-slovenska-bistrica
+dso-ljubljana-bezigrad
+dso-ljubljana-vic-rudnik-enota-bokalce
+os-nove-fuzine
+vrtec-laporje
+izgradnja-sportnega-centra-luce
+sportna-dvorana-podmezakla
+sportni-park-kodeljevo
+vecnamenska-dvorana-os-koroski-jeklarji-podruznica-kotlje
+dvorana-za-kulturne-druzbene-in-sportne-aktivnosti-gorenja-vas
+telovadnica-v-os-branik
+telovadnica-os-maksa-pecarja
+os-kolezija-celovita-sanacija-objekta-na-splitski-12
+celovita-sanacija-in-nadgradnja-os-nove-fuzine
+glasbena-sola-slovenj-gradec
+osnovna-sola-vide-pregarc
+osnovna-sola-cirila-kosmaca
+solski-center-ljubljana-askerceva
+osnovna-sola-cerkno
+osnovna-sola-maksa-pecarja
+celovita-prenova-objekt-vrtec-sentvid-enota-sapramiska
+vrtec-otona-zupancica-enota-cebelica
+vrtec-dornberk
+gradnja-podruznicne-sole-in-vrtca-turjak
+vrtec-sentjernej
+bauma@TL-WA855RE demaplus-next % brew install imagemagick
+==> Auto-updating Homebrew...
+Adjust how often this is run with `$HOMEBREW_AUTO_UPDATE_SECS` or disable with
+`$HOMEBREW_NO_AUTO_UPDATE=1`. Hide these hints with `$HOMEBREW_NO_ENV_HINTS=1` (see `man brew`).
+==> Homebrew collects anonymous analytics.
+Read the analytics documentation (and how to opt-out) here:
+  https://docs.brew.sh/Analytics
+No analytics have been recorded yet (nor will be during this `brew` run).
+
+==> Homebrew is run entirely by unpaid volunteers. Please consider donating:
+  https://github.com/Homebrew/brew#donations
+
+==> Auto-updated Homebrew!
+Updated 2 taps (homebrew/core and homebrew/cask).
+==> New Formulae
+aoe: Terminal session manager for AI coding agents
+apache-serf: High-performance asynchronous HTTP client library
+asc: Fast, lightweight CLI for App Store Connect
+bitwuzla: SMT solver for bit-vectors, floating-points, arrays and uninterpreted functions
+claude-agent-acp: Use Claude Code from any ACP client such as Zed!
+datadog-static-analyzer: Static analysis tool for code quality and security
+fracturedjson: JSON formatter that produces highly readable but fairly compact output
+git-flow-next: Modern implementation of the Git-flow branching model
+grafanactl: CLI to interact with Grafana
+picoclaw: Ultra-efficient personal AI assistant in Go
+rtk: CLI proxy to minimize LLM token consumption
+rustledger: Fast, pure Rust implementation of Beancount double-entry accounting
+sss-cli: Shamir secret share command-line interface
+structurizr: Software architecture models as code
+whodb-cli: Database management CLI with TUI interface, MCP server support, AI, and more
+zeroclaw: Rust-first autonomous agent runtime
+zxing-cpp: Multi-format barcode image processing library written in C++
+
+==> Fetching downloads for: imagemagick
+✔︎ Bottle Manifest imagemagick (7.1.2-13)             Downloaded   82.2KB/ 82.2KB
+✔︎ Bottle Manifest pcre2 (10.47_1)                    Downloaded   11.7KB/ 11.7KB
+✔︎ Bottle Manifest libunistring (1.4.1)               Downloaded    7.3KB/  7.3KB
+✔︎ Bottle Manifest gettext (1.0)                      Downloaded   13.7KB/ 13.7KB
+✔︎ Bottle Manifest glib (2.86.4)                      Downloaded   20.3KB/ 20.3KB
+✔︎ Bottle Manifest jpeg-turbo (3.1.3)                 Downloaded    8.3KB/  8.3KB
+✔︎ Bottle Manifest giflib (5.2.2)                     Downloaded   10.8KB/ 10.8KB
+✔︎ Bottle Manifest highway (1.3.0)                    Downloaded    9.7KB/  9.7KB
+✔︎ Bottle Manifest imath (3.2.2)                      Downloaded    7.4KB/  7.4KB
+✔︎ Bottle Manifest libpng (1.6.55)                    Downloaded    8.6KB/  8.6KB
+✔︎ Bottle Manifest libtiff (4.7.1_1)                  Downloaded   12.6KB/ 12.6KB
+✔︎ Bottle Manifest little-cms2 (2.18)                 Downloaded   12.2KB/ 12.2KB
+✔︎ Bottle Manifest libdeflate (1.25)                  Downloaded    7.8KB/  7.8KB
+✔︎ Bottle giflib (5.2.2)                              Downloaded  152.7KB/152.7KB
+✔︎ Bottle Manifest openjph (0.26.3)                   Downloaded   12.3KB/ 12.3KB
+✔︎ Bottle imath (3.2.2)                               Downloaded  194.2KB/194.2KB
+✔︎ Bottle Manifest openexr (3.4.4_2)                  Downloaded   15.6KB/ 15.6KB
+✔︎ Bottle Manifest jpeg-xl (0.11.2)                   Downloaded   22.1KB/ 22.1KB
+✔︎ Bottle libpng (1.6.55)                             Downloaded  459.8KB/459.8KB
+✔︎ Bottle libdeflate (1.25)                           Downloaded  111.1KB/111.1KB
+✔︎ Bottle Manifest libvmaf (3.0.0)                    Downloaded   11.8KB/ 11.8KB
+✔︎ Bottle little-cms2 (2.18)                          Downloaded  434.3KB/434.3KB
+✔︎ Bottle highway (1.3.0)                             Downloaded  894.9KB/894.9KB
+✔︎ Bottle openjph (0.26.3)                            Downloaded  158.1KB/158.1KB
+✔︎ Bottle libunistring (1.4.1)                        Downloaded    1.9MB/  1.9MB
+✔︎ Bottle jpeg-turbo (3.1.3)                          Downloaded    1.1MB/  1.1MB
+✔︎ Bottle Manifest aom (3.13.1)                       Downloaded   32.2KB/ 32.2KB
+✔︎ Bottle Manifest libde265 (1.0.16)                  Downloaded   10.4KB/ 10.4KB
+✔︎ Bottle Manifest shared-mime-info (2.4_1)           Downloaded   16.9KB/ 16.9KB
+✔︎ Bottle openexr (3.4.4_2)                           Downloaded    1.1MB/  1.1MB
+✔︎ Bottle Manifest webp (1.6.0)                       Downloaded   19.5KB/ 19.5KB
+✔︎ Bottle libtiff (4.7.1_1)                           Downloaded    1.9MB/  1.9MB
+✔︎ Bottle Manifest x265 (4.1)                         Downloaded    9.8KB/  9.8KB
+✔︎ Bottle Manifest libheif (1.21.2)                   Downloaded   33.8KB/ 33.8KB
+✔︎ Bottle Manifest m4 (1.4.21)                        Downloaded    9.5KB/  9.5KB
+✔︎ Bottle pcre2 (10.47_1)                             Downloaded    2.4MB/  2.4MB
+✔︎ Bottle Manifest libtool (2.5.4)                    Downloaded   13.8KB/ 13.8KB
+✔︎ Bottle libde265 (1.0.16)                           Downloaded  445.7KB/445.7KB
+✔︎ Bottle m4 (1.4.21)                                 Downloaded  282.8KB/282.8KB
+✔︎ Bottle libtool (2.5.4)                             Downloaded    1.1MB/  1.1MB
+✔︎ Bottle libvmaf (3.0.0)                             Downloaded    1.1MB/  1.1MB
+✔︎ Bottle shared-mime-info (2.4_1)                    Downloaded    1.2MB/  1.2MB
+✔︎ Bottle webp (1.6.0)                                Downloaded  907.6KB/907.6KB
+✔︎ Bottle aom (3.13.1)                                Downloaded    4.1MB/  4.1MB
+✔︎ Bottle libheif (1.21.2)                            Downloaded    2.6MB/  2.6MB
+✔︎ Bottle glib (2.86.4)                               Downloaded    9.0MB/  9.0MB
+✔︎ Bottle gettext (1.0)                               Downloaded   10.3MB/ 10.3MB
+✔︎ Bottle x265 (4.1)                                  Downloaded    3.8MB/  3.8MB
+✔︎ Bottle imagemagick (7.1.2-13)                      Downloaded   11.0MB/ 11.0MB
+✔︎ Bottle jpeg-xl (0.11.2)                            Downloaded   14.2MB/ 14.2MB
+==> Installing dependencies for imagemagick: pcre2, libunistring, gettext, glib, jpeg-turbo, giflib, highway, imath, libpng, libtiff, little-cms2, libdeflate, openjph, openexr, jpeg-xl, libvmaf, aom, libde265, shared-mime-info, webp, x265, libheif, m4 and libtool
+==> Installing imagemagick dependency: pcre2
+==> Pouring pcre2--10.47_1.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/pcre2/10.47_1: 244 files, 7.2MB
+==> Installing imagemagick dependency: libunistring
+==> Pouring libunistring--1.4.1.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/libunistring/1.4.1: 59 files, 5.8MB
+==> Installing imagemagick dependency: gettext
+==> Pouring gettext--1.0.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/gettext/1.0: 2,499 files, 35.5MB
+==> Installing imagemagick dependency: glib
+==> Pouring glib--2.86.4.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/glib/2.86.4: 504 files, 38.6MB
+==> Installing imagemagick dependency: jpeg-turbo
+==> Pouring jpeg-turbo--3.1.3.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/jpeg-turbo/3.1.3: 47 files, 3.7MB
+==> Installing imagemagick dependency: giflib
+==> Pouring giflib--5.2.2.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/giflib/5.2.2: 20 files, 560.1KB
+==> Installing imagemagick dependency: highway
+==> Pouring highway--1.3.0.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/highway/1.3.0: 81 files, 5.6MB
+==> Installing imagemagick dependency: imath
+==> Pouring imath--3.2.2.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/imath/3.2.2: 50 files, 990KB
+==> Installing imagemagick dependency: libpng
+==> Pouring libpng--1.6.55.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/libpng/1.6.55: 28 files, 1.4MB
+==> Installing imagemagick dependency: libtiff
+==> Pouring libtiff--4.7.1_1.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/libtiff/4.7.1_1: 488 files, 9.0MB
+==> Installing imagemagick dependency: little-cms2
+==> Pouring little-cms2--2.18.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/little-cms2/2.18: 23 files, 1.5MB
+==> Installing imagemagick dependency: libdeflate
+==> Pouring libdeflate--1.25.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/libdeflate/1.25: 17 files, 333.6KB
+==> Installing imagemagick dependency: openjph
+==> Pouring openjph--0.26.3.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/openjph/0.26.3: 25 files, 637.7KB
+==> Installing imagemagick dependency: openexr
+==> Pouring openexr--3.4.4_2.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/openexr/3.4.4_2: 212 files, 4.6MB
+==> Installing imagemagick dependency: jpeg-xl
+==> Pouring jpeg-xl--0.11.2.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/jpeg-xl/0.11.2: 64 files, 36.9MB
+==> Installing imagemagick dependency: libvmaf
+==> Pouring libvmaf--3.0.0.arm64_sonoma.bottle.1.tar.gz
+🍺  /opt/homebrew/Cellar/libvmaf/3.0.0: 235 files, 7.5MB
+==> Installing imagemagick dependency: aom
+==> Pouring aom--3.13.1.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/aom/3.13.1: 28 files, 10.3MB
+==> Installing imagemagick dependency: libde265
+==> Pouring libde265--1.0.16.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/libde265/1.0.16: 21 files, 1.5MB
+==> Installing imagemagick dependency: shared-mime-info
+==> Pouring shared-mime-info--2.4_1.arm64_sonoma.bottle.tar.gz
+==> /opt/homebrew/Cellar/shared-mime-info/2.4_1/bin/update-mime-database /opt/ho
+🍺  /opt/homebrew/Cellar/shared-mime-info/2.4_1: 89 files, 4.9MB
+==> Installing imagemagick dependency: webp
+==> Pouring webp--1.6.0.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/webp/1.6.0: 64 files, 2.7MB
+==> Installing imagemagick dependency: x265
+==> Pouring x265--4.1.arm64_sonoma.bottle.1.tar.gz
+🍺  /opt/homebrew/Cellar/x265/4.1: 12 files, 11.8MB
+==> Installing imagemagick dependency: libheif
+==> Pouring libheif--1.21.2.arm64_sonoma.bottle.tar.gz
+==> /opt/homebrew/opt/shared-mime-info/bin/update-mime-database /opt/homebrew/sh
+🍺  /opt/homebrew/Cellar/libheif/1.21.2: 50 files, 7.4MB
+==> Installing imagemagick dependency: m4
+==> Pouring m4--1.4.21.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/m4/1.4.21: 14 files, 815.8KB
+==> Installing imagemagick dependency: libtool
+==> Pouring libtool--2.5.4.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/libtool/2.5.4: 76 files, 4.1MB
+==> Installing imagemagick
+==> Pouring imagemagick--7.1.2-13.arm64_sonoma.bottle.1.tar.gz
+==> Caveats
+imagemagick-full includes additional tools and libraries that are not included in the regular imagemagick formula.
+==> Summary
+🍺  /opt/homebrew/Cellar/imagemagick/7.1.2-13: 805 files, 31.9MB
+==> Running `brew cleanup imagemagick`...
+Disable this behaviour by setting `HOMEBREW_NO_INSTALL_CLEANUP=1`.
+Hide these hints with `HOMEBREW_NO_ENV_HINTS=1` (see `man brew`).
+==> Caveats
+==> imagemagick
+imagemagick-full includes additional tools and libraries that are not included in the regular imagemagick formula.
+bauma@TL-WA855RE demaplus-next % brew install imagemagick
+Warning: imagemagick 7.1.2-13 is already installed and up-to-date.
+To reinstall 7.1.2-13, run:
+  brew reinstall imagemagick
+bauma@TL-WA855RE demaplus-next % mkdir -p public/reference/thumbs
+
+magick mogrify \
+  -path public/reference/thumbs \
+  -format webp \
+  -thumbnail 600x450^ \
+  -gravity center \
+  -extent 600x450 \
+  -quality 78 \
+  ./PATH_DO_TVOJIH_ORIGINALOV/*.jpg
+zsh: no matches found: ./PATH_DO_TVOJIH_ORIGINALOV/*.jpg
+bauma@TL-WA855RE demaplus-next % magick mogrify \
+  -path public/reference/thumbs \
+  -format webp \
+  -thumbnail 600x450^ \
+  -gravity center \
+  -extent 600x450 \
+  -quality 78 \
+  ./PATH_DO_TVOJIH_ORIGINALOV/*.jpg
+zsh: no matches found: ./PATH_DO_TVOJIH_ORIGINALOV/*.jpg
+bauma@TL-WA855RE demaplus-next % mkdir -p public/reference/thumbs
+bauma@TL-WA855RE demaplus-next % npm run dev
+
+> demaplus-next@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.101:3000
+
+✓ Starting...
+✓ Ready in 599ms
+ GET /reference/projektiranje-in-gradnja-montaznega-vrtca-grgar 200 in 490ms (compile: 368ms, generate-params: 168ms, render: 122ms)
+ GET /project 200 in 66ms (compile: 41ms, render: 25ms)
+ GET /reference/thumbs/novogradnja-objekta-vila-rozna-dolina-condominium.webp 404 in 124ms (compile: 35ms, render: 88ms)
+ GET /reference/thumbs/salon-pohistva-in-hotel-nox.webp 404 in 196ms (compile: 41ms, render: 155ms)
+ GET /reference/thumbs/hotel-cubo.webp 404 in 196ms (compile: 47ms, render: 150ms)
+ GET /reference/thumbs/vila-madeleine.webp 404 in 197ms (compile: 53ms, render: 144ms)
+ GET /reference/thumbs/izvedba-obnove-stavbe-vila-zlatica-v-ljubljani.webp 404 in 197ms (compile: 58ms, render: 139ms)
+ GET /reference/thumbs/izvedba-gradbeno-obrtniskih-in-instalacijskih-del-ter-zunanje-ureditve-pri-gradnji-objekta-na-stolbi-8-v-ljubljani.webp 404 in 198ms (compile: 63ms, render: 135ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/novogradnja-objekta-vila-rozna-dolina-condominium.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/salon-pohistva-in-hotel-nox.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/hotel-cubo.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/vila-madeleine.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/izvedba-obnove-stavbe-vila-zlatica-v-ljubljani.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/izvedba-gradbeno-obrtniskih-in-instalacijskih-del-ter-zunanje-ureditve-pri-gradnji-objekta-na-stolbi-8-v-ljubljani.webp received null
+ GET /reference/thumbs/center-obala-debeli-rtic.webp 404 in 63ms (compile: 8ms, render: 55ms)
+ GET /reference/thumbs/pionirski-dom-art-center.webp 404 in 63ms (compile: 23ms, render: 40ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/center-obala-debeli-rtic.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/pionirski-dom-art-center.webp received null
+ GET /reference/thumbs/svicarija.webp 404 in 64ms (compile: 45ms, render: 19ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/svicarija.webp received null
+ GET /reference/thumbs/izvedba-goi-del-ter-zu-za-objekt-cetrtne-skupnosti-golovec-v-ljubljani.webp 404 in 58ms (compile: 8ms, render: 50ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/izvedba-goi-del-ter-zu-za-objekt-cetrtne-skupnosti-golovec-v-ljubljani.webp received null
+ GET /reference/thumbs/hisa-soncek-vincarjeva.webp 404 in 58ms (compile: 27ms, render: 31ms)
+ GET /reference/thumbs/gradnja-vrtca-v-bohinjski-bistrici.webp 404 in 57ms (compile: 35ms, render: 23ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/hisa-soncek-vincarjeva.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/gradnja-vrtca-v-bohinjski-bistrici.webp received null
+ GET /reference/thumbs/projektiranje-in-gradnja-montaznega-vrtca-grgar.webp 404 in 55ms (compile: 9ms, render: 46ms)
+ GET /reference/thumbs/projektiranje-in-izgradnja-montaznega-lesenega-stanovanjsko-poslovnega-kompleksa-polje-iv.webp 404 in 54ms (compile: 20ms, render: 34ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/projektiranje-in-gradnja-montaznega-vrtca-grgar.webp received null
+ GET /reference/thumbs/zmajev-brlog-na-ljubljanskem-gradu.webp 404 in 54ms (compile: 38ms, render: 16ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/projektiranje-in-izgradnja-montaznega-lesenega-stanovanjsko-poslovnega-kompleksa-polje-iv.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/zmajev-brlog-na-ljubljanskem-gradu.webp received null
+ GET /reference/thumbs/hribarjeva-dvorana-na-ljubljanskem-gradu.webp 404 in 65ms (compile: 9ms, render: 56ms)
+ GET /reference/thumbs/muzej-in-prezentacija-lutk-na-ljubljanskem-gradu.webp 404 in 64ms (compile: 23ms, render: 42ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/hribarjeva-dvorana-na-ljubljanskem-gradu.webp received null
+ GET /reference/thumbs/porocne-dvorane-na-ljubljanskem-gradu.webp 404 in 64ms (compile: 42ms, render: 22ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/muzej-in-prezentacija-lutk-na-ljubljanskem-gradu.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/porocne-dvorane-na-ljubljanskem-gradu.webp received null
+ GET /reference/thumbs/pokrito-igrisce-druzinski-center-mala-ulica.webp 404 in 63ms (compile: 8ms, render: 55ms)
+ GET /reference/thumbs/solski-hotel-astoria-bled.webp 404 in 62ms (compile: 24ms, render: 39ms)
+ GET /reference/thumbs/siritev-pokopalisca-vic-goi-dela.webp 404 in 61ms (compile: 33ms, render: 28ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/pokrito-igrisce-druzinski-center-mala-ulica.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/solski-hotel-astoria-bled.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/siritev-pokopalisca-vic-goi-dela.webp received null
+ GET /reference/thumbs/zdravstveni-dom-slovenska-bistrica.webp 404 in 59ms (compile: 8ms, render: 51ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/zdravstveni-dom-slovenska-bistrica.webp received null
+ GET /reference/thumbs/dso-ljubljana-bezigrad.webp 404 in 60ms (compile: 29ms, render: 31ms)
+ GET /reference/thumbs/dso-ljubljana-vic-rudnik-enota-bokalce.webp 404 in 59ms (compile: 37ms, render: 23ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/dso-ljubljana-bezigrad.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/dso-ljubljana-vic-rudnik-enota-bokalce.webp received null
+ GET /reference/thumbs/os-nove-fuzine.webp 404 in 66ms (compile: 8ms, render: 58ms)
+ GET /reference/thumbs/vrtec-laporje.webp 404 in 66ms (compile: 20ms, render: 45ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/os-nove-fuzine.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/vrtec-laporje.webp received null
+ GET /reference/thumbs/izgradnja-sportnega-centra-luce.webp 404 in 66ms (compile: 40ms, render: 26ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/izgradnja-sportnega-centra-luce.webp received null
+ GET /reference/thumbs/sportna-dvorana-podmezakla.webp 404 in 34ms (compile: 2ms, render: 32ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/sportna-dvorana-podmezakla.webp received null
+ GET /reference/thumbs/sportni-park-kodeljevo.webp 404 in 36ms (compile: 14ms, render: 22ms)
+ GET /reference/thumbs/vecnamenska-dvorana-os-koroski-jeklarji-podruznica-kotlje.webp 404 in 36ms (compile: 19ms, render: 17ms)
+⨯ The requested resource isn't a valid image for /reference/thumbs/sportni-park-kodeljevo.webp received null
+⨯ The requested resource isn't a valid image for /reference/thumbs/vecnamenska-dvorana-os-koroski-jeklarji-podruznica-kotlje.webp received null
+ GET /reference/hotel-cubo 200 in 43ms (compile: 7ms, generate-params: 3ms, render: 36ms)
+ GET /reference/novogradnja-objekta-vila-rozna-dolina-condominium 200 in 44ms (compile: 17ms, generate-params: 6ms, render: 27ms)
+^C
+bauma@TL-WA855RE demaplus-next % ls public/wp-content/uploads/2022/03 | head
+CENTER-OBALA-DEBELI-RTIC-1-1024x683.jpg
+CENTER-OBALA-DEBELI-RTIC-1-1024x683.jpg.webp
+CENTER-OBALA-DEBELI-RTIC-1-150x150.jpg
+CENTER-OBALA-DEBELI-RTIC-1-150x150.jpg.webp
+  UW PICO 5.09                           New Buffer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                  [ New file ]
+^G Get Help  ^O WriteOut  ^R Read File ^Y Prev Pg   ^K Cut Text  ^C Cur Pos
+^X Exit      ^J Justify   ^W Where is  ^V Next Pg   ^U UnCut Text^T To Spell
+  UW PICO 5.09           File: scripts/generate-thumbs.mjs            Modified
+
+    console.log(noFeatured.join("\n"));
+  }
+
+  if (missingSources.length) {
+    console.log("\nMissing source images (manual fix):");
+    for (const m of missingSources) {
+      console.log(`- ${m.slug}: ${m.srcPath}${m.error ? ` (${m.error})` : ""}`);
+    }
+    console.log(
+      "\nTip: te manjkajoče boš najbrž uredil tako, da najdeš pravi original v $
+    );
+  }
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});node scripts/generate-thumbs.mjs
+x
+exit
+

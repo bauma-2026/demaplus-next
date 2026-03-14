@@ -1,0 +1,489 @@
+@import "tailwindcss";
+
+/* -----------------------------------------------------------
+   Base document + tokens
+----------------------------------------------------------- */
+html,
+body {
+  height: 100%;
+}
+
+/* fallback */
+:root {
+  --header-h: 72px;
+}
+
+/* uporabljamo samo scroll-margin (marker) */
+html {
+  scroll-padding-top: 0px;
+}
+
+.anchor-offset {
+  scroll-margin-top: calc(var(--header-h) + 12px);
+}
+
+@layer base {
+  :root {
+    /* Page + shell */
+    --page-bg: #ffffff;
+    --header-bg: #ffffff;
+   --footer-bg: #f3f5f7;
+
+    /* Surfaces */
+    --surface: #ffffff;
+    --surface-2: #f7f8f9;
+    --surface-3: #f1f3f5;
+
+    /* Text */
+    --text: #111827;
+    --text-muted: #6b7280;
+    --text-muted-2: #374151;
+
+    /* Border */
+    --border: #e5e7eb;
+    --border-strong: #d7dce1;
+    --header-border: #eceff2;
+    --footer-border: #e1e5e9;
+    --panel-border: #e6e9ed;
+
+    /* Panels + soft sections */
+    --panel-bg: #fbfbfc;
+    --section-soft: #f6f8fa;
+    --section-soft-2: #f3f6f8;
+
+    /* Brand (Dema Plus) */
+    --brand-light: #bacad3;
+    --brand: #8fa6b2;
+    --brand-strong: #6f8895;
+
+    /* RGB helper */
+    --brand-rgb: 143 166 178;
+
+    /* Accent system */
+    --accent: var(--brand);
+    --accent-strong: var(--brand-strong);
+
+    /* Soft tints */
+    --accent-soft: rgba(143, 166, 178, 0.08);
+    --accent-soft-2: rgba(143, 166, 178, 0.14);
+
+    /* Brand tinted surfaces */
+    --brand-tint: rgba(186, 202, 211, 0.14);
+    --brand-tint-2: rgba(143, 166, 178, 0.1);
+
+    /* Micro-spacing rhythm */
+    --section-py: clamp(2.25rem, 2.9vw, 3.25rem);
+    --section-py-tight: clamp(1.75rem, 2.2vw, 2.5rem);
+    --section-py-soft: clamp(2rem, 2.5vw, 2.75rem);
+
+    --card-radius: 1rem;
+    --card-radius-lg: 1.25rem;
+  }
+
+  @supports (background: color-mix(in srgb, black 10%, white)) {
+    :root {
+      --accent-soft: color-mix(in srgb, var(--accent) 8%, white);
+      --accent-soft-2: color-mix(in srgb, var(--accent) 14%, white);
+    }
+  }
+
+  body {
+    background: var(--page-bg);
+    color: var(--text);
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  :where(a, button, input, textarea, select):focus-visible {
+    outline: none;
+    border-radius: 0.375rem;
+    box-shadow: 0 0 0 4px rgba(186, 202, 211, 0.35);
+  }
+
+  @supports (box-shadow: 0 0 0 3px color-mix(in srgb, black 10%, transparent)) {
+    :where(a, button, input, textarea, select):focus-visible {
+      box-shadow: 0 0 0 4px
+        color-mix(in srgb, var(--brand-light) 48%, transparent);
+    }
+  }
+
+  ::selection {
+    background: rgba(186, 202, 211, 0.38);
+    color: var(--text);
+  }
+
+  @supports (background: color-mix(in srgb, black 10%, white)) {
+    ::selection {
+      background: color-mix(in srgb, var(--brand-light) 46%, white);
+    }
+  }
+}
+
+/* -----------------------------------------------------------
+   Tailwind class mapping (minimal + safe)
+----------------------------------------------------------- */
+@layer base {
+  .bg-neutral-50 {
+    background-color: var(--surface-2);
+  }
+
+  .bg-white {
+    background-color: var(--surface);
+  }
+
+  .text-neutral-900 {
+    color: var(--text);
+  }
+
+  .text-neutral-700 {
+    color: var(--text-muted-2);
+  }
+
+  .text-neutral-600 {
+    color: var(--text-muted);
+  }
+
+  .border-neutral-200 {
+    border-color: var(--border);
+  }
+}
+
+/* -----------------------------------------------------------
+   Utilities — brez @apply
+----------------------------------------------------------- */
+@layer utilities {
+  .bg-brand-tint {
+    background-color: var(--brand-tint);
+  }
+
+  .bg-brand-tint-2 {
+    background-color: var(--brand-tint-2);
+  }
+
+  .bg-surface {
+    background-color: var(--surface);
+  }
+
+  .bg-surface-2 {
+    background-color: var(--surface-2);
+  }
+
+  .bg-surface-3 {
+    background-color: var(--surface-3);
+  }
+
+  .bg-panel {
+    background-color: var(--panel-bg);
+  }
+
+  .bg-section-soft {
+    background-color: var(--section-soft);
+  }
+
+  .bg-section-soft-2 {
+    background-color: var(--section-soft-2);
+  }
+
+  .text-default {
+    color: var(--text);
+  }
+
+  .text-muted {
+    color: var(--text-muted);
+  }
+
+  .text-accent {
+    color: var(--accent);
+  }
+
+  .border-default {
+    border-color: var(--border);
+  }
+
+  .border-panel {
+    border-color: var(--panel-border);
+  }
+
+  .border-header {
+    border-color: var(--header-border);
+  }
+
+  .border-footer {
+    border-color: var(--footer-border);
+  }
+
+  .bg-accent-soft {
+    background-color: var(--accent-soft);
+  }
+
+  .bg-accent-soft-2 {
+    background-color: var(--accent-soft-2);
+  }
+
+  .section-y {
+    padding-top: var(--section-py);
+    padding-bottom: var(--section-py);
+  }
+
+  .section-y-tight {
+    padding-top: var(--section-py-tight);
+    padding-bottom: var(--section-py-tight);
+  }
+
+  .section-y-soft {
+    padding-top: var(--section-py-soft);
+    padding-bottom: var(--section-py-soft);
+  }
+
+  .section-top-tight {
+    padding-top: var(--section-py-tight);
+  }
+
+  .section-bg {
+    background-color: var(--surface-2);
+  }
+
+  .panel-soft {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--card-radius-lg);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius-lg);
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .card:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+    transform: translateY(-2px);
+  }
+.card-media {
+  overflow: hidden;
+  border-radius: var(--card-radius-lg);
+}
+
+.card-media img {
+  transition: transform 500ms ease;
+}
+
+.group:hover .card-media img {
+  transform: scale(1.02);
+}
+.btn-pill-idle {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+}
+
+.btn-pill-idle:hover {
+  border-color: #111827;
+  color: #111827;
+}
+
+.btn-pill-active {
+  border: 1px solid #111827;
+  background: #111827;
+  color: #ffffff;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.08);
+}
+
+  @supports (border-color: color-mix(in srgb, black 10%, white)) {
+    .card:hover {
+      border-color: color-mix(in srgb, var(--brand) 28%, var(--border));
+    }
+  }
+
+  .btn-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      color 180ms ease;
+  }
+
+  .btn-pill:hover {
+    border-color: var(--border-strong);
+    background: var(--accent-soft);
+  }
+
+  .link-accent {
+    color: var(--text-muted-2);
+    transition: color 180ms ease;
+  }
+
+  .link-accent:hover {
+    color: var(--brand-strong);
+  }
+
+  .panel {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    border: 1px solid var(--border);
+    background: var(--accent-soft);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .btn-brand {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;
+    padding: 0.55rem 1.1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    background: #f59e0b;
+    color: #111827;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    transition:
+      background-color 200ms ease,
+      transform 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  .btn-brand:hover {
+    background: #ea8a00;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .btn-brand:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* -----------------------------------------------------------
+   Components — with @apply
+----------------------------------------------------------- */
+@layer components {
+  /* Section shell system */
+  .section-shell {
+    padding-top: var(--section-py);
+    padding-bottom: var(--section-py);
+  }
+
+  .section-shell-tight {
+    padding-top: var(--section-py-tight);
+    padding-bottom: var(--section-py-tight);
+  }
+
+  .section-shell-white {
+    background-color: var(--surface);
+    padding-top: var(--section-py);
+    padding-bottom: var(--section-py);
+  }
+
+  .section-shell-white-tight {
+    background-color: var(--surface);
+    padding-top: var(--section-py-tight);
+    padding-bottom: var(--section-py-tight);
+  }
+
+  /* Section titles */
+  .section-title {
+    @apply mt-2 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl;
+  }
+
+  .section-title-lg {
+    @apply mt-2 text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl;
+  }
+
+  /* Section intro */
+  .section-eyebrow {
+    @apply text-xs font-medium uppercase text-neutral-400;
+    letter-spacing: 0.05em;
+  }
+
+  .section-eyebrow--on-dark {
+    @apply text-xs font-medium uppercase text-neutral-300;
+    letter-spacing: 0.05em;
+  }
+
+  .section-lead {
+    @apply mt-3 text-sm leading-relaxed text-neutral-600 sm:text-base;
+  }
+
+  /* Cards */
+  .card-title {
+    @apply text-sm font-semibold tracking-tight text-neutral-900 sm:text-[15px];
+  }
+
+  .card-meta {
+    @apply mt-2 line-clamp-2 text-xs leading-relaxed text-neutral-600;
+  }
+
+  .card-link {
+    @apply mt-3 inline-flex items-center gap-2 text-xs text-neutral-600 transition-colors;
+  }
+
+  .card-link:hover {
+    color: var(--brand-strong);
+  }
+
+  .h-1_5 {
+    height: 1.5px;
+  }
+}
+
+.prose h2 {
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.article-content {
+  max-width: 68ch;
+}
+
+.article-content-wide {
+  max-width: none;
+}
+.article-content p {
+  margin: 1rem 0;
+}
+.article-content-wide {
+  max-width: 80ch;
+}
+.article-content {
+  line-height: 1.7;
+}
+.article-content h2 {
+  margin-top: 2rem;
+  margin-bottom: 0.6rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #171717;
+}
+
+.article-content p:first-of-type {
+  margin-top: 0;
+}
+
+.article-content h2:first-of-type {
+  margin-top: 1.2rem;
+}
