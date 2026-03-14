@@ -21,19 +21,21 @@ export default function PageHero({
   return (
     <header className={`relative overflow-hidden ${className ?? ""}`}>
       {image && (
-        <div className="absolute inset-0">
-          <Image
-            src={image}
-            alt=""
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-black/35" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-transparent" />
-        </div>
-      )}
+  <div className="absolute inset-0 bg-neutral-100">
+    <Image
+      src={image}
+      alt=""
+      fill
+      priority
+      className="object-cover"
+      sizes="100vw"
+    />
+
+    {/* softer overlay */}
+    <div className="absolute inset-0 bg-black/20" />
+    <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-transparent" />
+  </div>
+)}
 
       {image ? (
         <div className="relative z-10">
