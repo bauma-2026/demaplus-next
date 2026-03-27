@@ -37,7 +37,7 @@ export default function PageHero({
 
       {image ? (
         <div className="relative z-10">
-          <div className="mx-auto max-w-3xl px-5 py-12 sm:py-20">
+          <div className="mx-auto max-w-7xl px-5 py-20 sm:py-24">
             <div
               className={
                 rightSlot
