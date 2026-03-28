@@ -5,8 +5,15 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CookieConsent from "../components/CookieConsent";
 
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  "https://demaplus-next.vercel.app";
+
+// 🔥 detect production
+const isProd = BASE_URL === "https://demaplus.si";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://demaplus-next.vercel.app"), // ⚠️ zamenjaj na live
+  metadataBase: new URL(BASE_URL),
 
   title: {
     default: "DEMA PLUS, inženiring d.o.o.",
@@ -16,11 +23,22 @@ export const metadata: Metadata = {
   description:
     "Dema Plus izvaja celovito vodenje investicijskih projektov, gradbeni nadzor, rekonstrukcije in novogradnje objektov.",
 
+  // ✅ ROBOTS (ključ)
+  robots: isProd
+    ? {
+        index: true,
+        follow: true,
+      }
+    : {
+        index: false,
+        follow: false,
+      },
+
   openGraph: {
     title: "DEMA PLUS, inženiring d.o.o.",
     description:
       "Dema Plus izvaja celovito vodenje investicijskih projektov, gradbeni nadzor, rekonstrukcije in novogradnje objektov.",
-    url: "https://demaplus-next.vercel.app",
+    url: BASE_URL,
     siteName: "Dema Plus",
     locale: "sl_SI",
     type: "website",
@@ -50,6 +68,11 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
   },
+
+  // ✅ canonical vedno na live
+  alternates: {
+    canonical: "https://demaplus.si",
+  },
 };
 
 export default function RootLayout({
@@ -63,7 +86,6 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
-
         <CookieConsent />
       </body>
     </html>
