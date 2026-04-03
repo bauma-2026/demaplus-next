@@ -35,73 +35,73 @@ export default function PageHero({
         </div>
       )}
 
-      {image ? (
-        <div className="relative z-10">
-          <div className="mx-auto max-w-7xl px-5 py-20 sm:py-24">
-            <div
-              className={
-                rightSlot
-                  ? "flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"
-                  : ""
-              }
-            >
-              <div className="max-w-3xl">
-                {kicker && (
-                  <p className="text-xs font-medium uppercase tracking-[0.08em] text-white/70">
-                    {kicker}
-                  </p>
-                )}
+     {image ? (
+  <div className="relative z-10">
+    <div className="mx-auto max-w-7xl px-5 py-10 sm:py-14">
+      <div
+        className={
+          rightSlot
+            ? "flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"
+            : ""
+        }
+      >
+        <div className="max-w-3xl">
+          {kicker && (
+            <p className="text-xs font-medium uppercase tracking-[0.08em] text-white/70">
+              {kicker}
+            </p>
+          )}
 
-                <h1 className="mt-2 text-3xl font-semibold leading-[1.15] tracking-tight text-white sm:text-[38px]">
-                  {title}
-                </h1>
+          <h1 className="mt-2 text-3xl font-semibold leading-[1.1] tracking-tight text-white sm:text-[38px]">
+            {title}
+          </h1>
 
-                {desc && (
-                  <p className="mt-2 max-w-[420px] text-sm leading-6 text-white/80">
-                    {desc}
-                  </p>
-                )}
-              </div>
-
-              {rightSlot && (
-                <div className="shrink-0 pt-4 sm:pt-0">{rightSlot}</div>
-              )}
-            </div>
-          </div>
+          {desc && (
+            <p className="mt-2.5 max-w-[420px] text-sm leading-6 text-white/80">
+              {desc}
+            </p>
+          )}
         </div>
-      ) : (
-        <div className="relative z-10">
-          <div
-            className={
-              rightSlot
-                ? "flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"
-                : ""
-            }
-          >
-            <div className="max-w-3xl">
-              {kicker && (
-                <p className="text-xs font-medium uppercase tracking-[0.08em] text-neutral-400">
-                  {kicker}
-                </p>
-              )}
 
-              <h1 className="mt-2 text-3xl font-semibold leading-[1.15] tracking-tight text-neutral-900 sm:text-[38px]">
-                {title}
-              </h1>
+        {rightSlot && (
+          <div className="shrink-0 pt-3 sm:pt-0">{rightSlot}</div>
+        )}
+      </div>
+    </div>
+  </div>
+) : (
+  <div className="relative z-10">
+    <div
+      className={
+        rightSlot
+          ? "flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"
+          : ""
+      }
+    >
+      <div className="max-w-3xl">
+        {kicker && (
+          <p className="text-xs font-medium uppercase tracking-[0.08em] text-neutral-400">
+            {kicker}
+          </p>
+        )}
 
-              {desc && (
-                <p className="mt-2 max-w-[420px] text-sm leading-6 text-neutral-500">
-                  {desc}
-                </p>
-              )}
-            </div>
+        <h1 className="mt-2 text-3xl font-semibold leading-[1.1] tracking-tight text-neutral-900 sm:text-[38px]">
+          {title}
+        </h1>
 
-            {rightSlot && (
-              <div className="shrink-0 pt-4 sm:pt-0">{rightSlot}</div>
-            )}
-          </div>
-        </div>
+        {desc && (
+          <p className="mt-2.5 max-w-[420px] text-sm leading-6 text-neutral-500">
+            {desc}
+          </p>
+        )}
+      </div>
+
+      {rightSlot && (
+        <div className="shrink-0 pt-3 sm:pt-0">{rightSlot}</div>
       )}
+    </div>
+  </div>
+)}
     </header>
   );
 }

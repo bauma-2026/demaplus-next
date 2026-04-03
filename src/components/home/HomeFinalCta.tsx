@@ -1,41 +1,49 @@
 import Image from "next/image";
 import Link from "next/link";
+import Container from "@/components/layout/Container";
 
 export default function HomeFinalCta() {
   return (
-    <section className="relative mt-0">
-      <div className="relative overflow-hidden">
-        {/* Background image */}
-        <div className="absolute inset-0">
-          <Image
-            src="/images/banners/process-banner.webp"
-            alt=""
-            fill
-            className="object-cover"
-          />
+   <section className="relative mt-0">
+  <div className="relative overflow-hidden">
+    {/* Background image */}
+    <div className="absolute inset-0">
+      <Image
+        src="/images/banners/process-banner.webp"
+        alt=""
+        fill
+        className="object-cover"
+      />
 
-          {/* Base dark overlay */}
-          <div className="absolute inset-0 bg-[#1c2430]/72" />
+      {/* Overlays */}
+      <div className="absolute inset-0 bg-neutral-900/60" />
+      <div className="absolute inset-0 bg-gradient-to-r from-neutral-900/80 via-neutral-900/50 to-transparent" />
+    </div>
 
-          {/* Subtle brand tint from left */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[rgba(var(--brand-rgb),0.14)] via-transparent to-transparent" />
-        </div>
-
-        {/* Content */}
-        <div className="relative mx-auto max-w-6xl px-6 py-24 text-center text-white sm:py-28">
-          <h2 className="text-3xl font-semibold tracking-tight leading-tight sm:text-4xl">
+    {/* Content */}
+    <Container>
+      <div className="relative py-16 text-center text-white sm:py-20">
+        <div className="mx-auto max-w-3xl">
+          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
             Načrtujete projekt?
           </h2>
 
-          <p className="mx-auto mt-5 max-w-xl leading-relaxed text-white/80">
-            Stopite v stik z nami za strokovni posvet ali pripravo ponudbe.
-            Projekt obravnavamo sistematično, z jasno strukturo in odgovornostjo.
+          <p className="mt-3 text-sm leading-relaxed text-white/75 sm:text-base">
+            Stopite v stik za strokovni posvet ali pripravo ponudbe.
+            Projekt vodimo sistematično — z jasno strukturo,
+            nadzorom in odgovornostjo.
           </p>
 
-          <div className="mt-10">
+          <div className="mt-6">
             <Link
               href="/kontakt"
-className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-medium text-neutral-900 transition-all duration-300 hover:bg-white/92 hover:shadow-[0_0_0_4px_rgba(255,255,255,0.15)]"            >
+              className="group inline-flex items-center gap-2 rounded-full 
+                         border border-white/40 text-white
+                         px-5 py-2.5 text-sm font-medium
+                         backdrop-blur-sm
+                         transition-all duration-300
+                         hover:border-white hover:bg-white/10"
+            >
               Stopite v stik
               <span className="transition-transform duration-300 group-hover:translate-x-1">
                 →
@@ -44,6 +52,8 @@ className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 
           </div>
         </div>
       </div>
-    </section>
+    </Container>
+  </div>
+</section>
   );
 }

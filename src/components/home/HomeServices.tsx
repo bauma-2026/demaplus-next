@@ -21,17 +21,31 @@ const services = [
 
 export default function HomeServices() {
   return (
-    <section id="podrocja" className="section-shell border-b border-header bg-white">
+    <section
+      id="podrocja"
+      className="section-shell border-b border-header bg-white"
+    >
       <Container>
         {/* Head */}
         <div className="flex items-start justify-between gap-6">
           <div className="max-w-2xl">
             <p className="section-eyebrow">Področja delovanja</p>
+
             <h2 className="section-title">
-              Rekonstrukcije, novogradnje in inženiring.
+              Rekonstrukcije, novogradnje
+              <br className="sm:hidden" />
+              in inženiring.
             </h2>
 
-            <p className="section-lead">
+            {/* Mobile summary only */}
+            <p className="section-lead mt-3 sm:hidden">
+              Celovito pokrivamo rekonstrukcije objektov, novogradnje in
+              inženiring — od začetne presoje in priprave do izvedbe,
+              tehničnega nadzora in primopredaje.
+            </p>
+
+            {/* Desktop intro */}
+            <p className="section-lead mt-3 hidden sm:block">
               Tri ključna področja, kjer projekt vodimo od začetne presoje do
               izvedbe in predaje — z jasno strukturo, nadzorom in odgovornostjo.
             </p>
@@ -39,22 +53,21 @@ export default function HomeServices() {
 
           <Link
             href="/kontakt"
-            className="hidden sm:inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900 transition-colors"
+            className="hidden sm:inline-flex items-center gap-2 text-sm text-neutral-500 transition-colors hover:text-neutral-900"
           >
             Povpraševanje
             <span className="translate-y-[0.5px] text-neutral-400">→</span>
           </Link>
         </div>
 
-        {/* Services */}
-        <div className="mt-12 grid gap-10 lg:grid-cols-3 lg:gap-12">
+        {/* Desktop / tablet services */}
+        <div className="mt-12 hidden sm:grid sm:grid-cols-3 sm:gap-8 lg:gap-12">
           {services.map((s, i) => (
             <div
               key={s.title}
               className={[
-                "pb-10 lg:pb-0",
                 i !== services.length - 1
-                  ? "border-b border-footer lg:border-b-0 lg:border-r lg:border-footer lg:pr-12"
+                  ? "sm:border-r sm:border-footer sm:pr-8 lg:pr-12"
                   : "",
               ].join(" ")}
             >
@@ -70,10 +83,10 @@ export default function HomeServices() {
         </div>
 
         {/* Mobile CTA */}
-        <div className="mt-10 sm:hidden">
+        <div className="mt-3 sm:hidden">
           <Link
             href="/kontakt"
-            className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-neutral-500 transition-colors hover:text-neutral-900"
           >
             Povpraševanje
             <span className="translate-y-[0.5px] text-neutral-400">→</span>

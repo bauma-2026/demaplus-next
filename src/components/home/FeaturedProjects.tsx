@@ -11,30 +11,21 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMemo, useRef } from "react";
 
-function seededRandom(seed: number) {
-  let t = seed % 2147483647;
-  if (t <= 0) t += 2147483646;
-  return () => (t = (t * 16807) % 2147483647) / 2147483647;
-}
-
-function shuffleArraySeeded<T>(array: T[], seed: number): T[] {
-  const rand = seededRandom(seed);
-  const arr = [...array];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
 gsap.registerPlugin(ScrollTrigger);
 
 export default function FeaturedProjects() {
-const featured = useMemo(() => {
-  const hourSeed = Math.floor(Date.now() / (1000 * 60 * 60 * 6));
-
-  return shuffleArraySeeded(projects, hourSeed).slice(0, 6);
-}, []);
+  const featured = useMemo(() => {
+    return projects.filter((p) =>
+      [
+        "svicarija",
+        "novogradnja-objekta-vila-rozna-dolina-condominium",
+        "salon-pohistva-in-hotel-nox",
+        "hotel-cubo",
+        "vila-madeleine",
+        "izvedba-obnove-stavbe-vila-zlatica-v-ljubljani",
+      ].includes(p.slug)
+    );
+  }, []);
 
   const root = useRef<HTMLDivElement | null>(null);
 
@@ -95,49 +86,128 @@ const featured = useMemo(() => {
   }
 
   return (
-    <section
-      id="reference"
-      className="-mt-6 pt-10 pb-16 sm:-mt-10 sm:pt-12 sm:pb-20 scroll-mt-28"
-    >
+<section
+  id="reference"
+  className="bg-white section-y scroll-mt-28"
+>
       <Container>
         <div ref={root}>
           {/* Header */}
-          <div className="flex items-start justify-between gap-6">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
             <div className="max-w-2xl">
               <p className="section-eyebrow">Reference</p>
 
-              <h2 className="section-title-lg">
-                Projekti, ki govorijo namesto nas.
-              </h2>
-
-              <p className="section-lead">
-                Izbrani projekti, kjer je kakovost izvedbe ključnega pomena.
-              </p>
+             <h2 className="section-title-lg mt-2">
+  Projekti, ki govorijo
+  <br className="sm:hidden" />
+  namesto nas.
+</h2>
+              <p className="section-lead mt-3">
+  Izbrani projekti, kjer je kakovost izvedbe
+  <br className="sm:hidden" />
+  ključnega pomena.
+</p>
             </div>
 
             <Link
               href="/reference"
-              className="group hidden sm:inline-flex items-center gap-2 translate-y-[2px] text-sm font-medium text-neutral-700 transition-colors hover:text-[color:var(--brand-strong)]"
+              className="group hidden sm:inline-flex items-center gap-1.5 text-[13px] text-neutral-500 transition-colors hover:text-neutral-800"
             >
-              Vse reference
-              <span className="translate-y-[0.5px] text-neutral-400 transition-transform group-hover:translate-x-[2px]">
+              <span>Vse reference</span>
+              <span className="text-neutral-400 transition-transform duration-200 group-hover:translate-x-[2px]">
                 →
               </span>
             </Link>
           </div>
 
-          {/* Grid */}
+        {/* Mobile slider */}
+<div className="mt-8 sm:hidden">
+  <div
+    className="
+      -mx-5 overflow-x-auto overflow-y-hidden px-5
+      scroll-pl-5
+      overscroll-x-contain touch-pan-x
+      snap-x snap-mandatory
+      [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden
+    "
+    style={{ WebkitOverflowScrolling: "touch" }}
+  >
+    <div className="flex gap-4 pr-5">
+      {featured.slice(0, 6).map((p) => {
+        const title = decodeHtmlEntities(p.title);
+        const thumb = p.images?.[0] ?? `/reference/${p.slug}/hero.webp`;
+
+        return (
+          <div
+            key={p.slug}
+            className="w-[86%] min-w-[86%] shrink-0 snap-start"
+          >
+            <Link
+              href={`/reference/${p.slug}`}
+              className="group block"
+            >
+              <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-neutral-100">
+                <Image
+                  src={thumb}
+                  alt={title}
+                  fill
+                  sizes="86vw"
+                  className="object-cover saturate-[0.9] contrast-[1.02]"
+                />
+
+                <div className="pointer-events-none absolute inset-0 opacity-[0.18]">
+                  <div className="absolute inset-0 bg-black" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-white/10" />
+                </div>
+              </div>
+            </Link>
+
+            <div className="mt-2 pr-2">
+              <p className="text-[13px] text-neutral-600">{title}</p>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* End CTA rail */}
+      <Link
+        href="/reference"
+        className="group flex w-[112px] min-w-[112px] shrink-0 snap-start flex-col items-center justify-center text-center -ml-5"
+      >
+        <div
+          className="
+            flex h-[48px] w-[48px] items-center justify-center rounded-full
+            bg-neutral-100/70 ring-1 ring-black/5
+            transition-all duration-200
+            group-hover:scale-[1.04] group-hover:bg-neutral-100
+          "
+        >
+          <span className="text-[24px] leading-none text-neutral-800 transition-transform duration-200 group-hover:translate-x-[2px]">
+            →
+          </span>
+        </div>
+
+        <span className="mt-4 text-[13px] leading-[1.15] text-neutral-800 transition-colors group-hover:text-neutral-950">
+          Vse
+          <br />
+          reference
+        </span>
+      </Link>
+    </div>
+  </div>
+</div>
+          {/* Desktop grid */}
           <div
             data-fp-grid
-            className="mt-8 grid gap-y-12 gap-x-10 sm:grid-cols-2 lg:grid-cols-3"
+            className="mt-8 hidden gap-x-10 gap-y-10 sm:grid sm:grid-cols-2 lg:grid-cols-3"
           >
-          {featured.map((p) => {
-  const title = decodeHtmlEntities(p.title);
-  const excerpt = decodeHtmlEntities(p.excerpt);
-  const thumb = p.images?.[0] ?? `/reference/${p.slug}/hero.webp`;
+            {featured.slice(0, 6).map((p) => {
+              const title = decodeHtmlEntities(p.title);
+              const excerpt = decodeHtmlEntities(p.excerpt);
+              const thumb = p.images?.[0] ?? `/reference/${p.slug}/hero.webp`;
 
-  return (
-    <Link
+              return (
+                <Link
                   key={p.slug}
                   href={`/reference/${p.slug}`}
                   data-fp-item
@@ -145,7 +215,6 @@ const featured = useMemo(() => {
                   onMouseLeave={onLeave}
                   className="group block"
                 >
-                  {/* Image */}
                   <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-neutral-100">
                     <div
                       data-fp-img
@@ -155,7 +224,7 @@ const featured = useMemo(() => {
                         src={thumb}
                         alt={title}
                         fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
+                        sizes="(max-width: 1024px) 50vw, 33vw"
                         className="object-cover saturate-[0.9] contrast-[1.02]"
                       />
                     </div>
@@ -169,7 +238,6 @@ const featured = useMemo(() => {
                     </div>
                   </div>
 
-                  {/* Meta */}
                   <div data-fp-meta className="mt-4">
                     <h3 className="card-title transition-colors group-hover:text-neutral-700">
                       {title}
@@ -189,19 +257,6 @@ const featured = useMemo(() => {
                 </Link>
               );
             })}
-          </div>
-
-          {/* Mobile CTA */}
-          <div className="mt-10 sm:hidden">
-            <Link
-              href="/reference"
-              className="group inline-flex items-center gap-2 text-sm font-medium text-neutral-700 transition-colors hover:text-[color:var(--brand-strong)]"
-            >
-              Vse reference
-              <span className="translate-y-[0.5px] text-neutral-400 transition-transform group-hover:translate-x-[2px]">
-                →
-              </span>
-            </Link>
           </div>
         </div>
       </Container>

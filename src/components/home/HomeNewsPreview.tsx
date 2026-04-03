@@ -19,7 +19,7 @@ export default function HomeNewsPreview() {
 
           <Link
             href="/novice"
-            className="group text-sm font-medium text-neutral-700 transition-colors hover:text-[color:var(--brand-strong)]"
+            className="group text-sm text-neutral-700 transition-colors hover:text-[color:var(--brand-strong)]"
           >
             Vse novice
             <span className="ml-2 text-neutral-400 transition-transform group-hover:translate-x-[2px]">
@@ -31,11 +31,11 @@ export default function HomeNewsPreview() {
         <Link href={href} className="group mt-4 block max-w-2xl">
           <h2 className="section-title mt-1">{latestPost.title}</h2>
 
-          <p className="lead mt-3 max-w-[56ch] text-neutral-700">
+          <p className="section-lead mt-3 max-w-[56ch] text-neutral-700">
             {latestPost.excerpt}
           </p>
 
-          <div className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-neutral-700 transition-colors group-hover:text-neutral-900">
+          <div className="mt-3 inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900 transition-colors">
             Preberi novico
             <span className="text-neutral-400 transition-transform group-hover:translate-x-[2px]">
               →

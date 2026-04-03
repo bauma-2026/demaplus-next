@@ -41,8 +41,8 @@ export default function HomeHeroFeatured() {
   const headlineLines = Array.isArray(headline) ? headline : [headline];
 
   return (
- <section id="hero" className="relative">
-<div className="relative h-[56svh] min-h-[360px] sm:min-h-[460px] w-full overflow-hidden">
+<section id="hero" className="relative sm:border-b sm:border-header">
+  <div className="relative h-[56svh] min-h-[360px] sm:min-h-[460px] w-full overflow-hidden">
     
     {/* Image layer */}
     <div ref={mediaRef} className="absolute inset-0 z-0 overflow-hidden">
@@ -111,30 +111,8 @@ export default function HomeHeroFeatured() {
 
       {/* Compliance strip */}
      <div>
-        <Container className="py-4">
-          <div className="grid sm:grid-cols-3">
-            {chips.map((c, i) => (
-              <div
-                key={i}
-                className={[
-                  "px-6 py-3",
-                  i !== 0 ? "sm:border-l sm:border-neutral-200/70" : "",
-                  i === 0
-                    ? "border-l-4 border-[color:var(--brand)] bg-[color:var(--brand)]/10"
-                    : "",
-                ].join(" ")}
-              >
-                <div className="text-[11px] font-medium tracking-wide text-neutral-500">
-                  {c.label}
-                </div>
-                <div className="mt-1 text-sm font-medium text-neutral-900">
-                  {c.value}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </div>
+     
+       </div>
     </section>
   );
 }
