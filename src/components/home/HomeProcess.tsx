@@ -41,67 +41,97 @@ export default function HomeProcess() {
       <div className="relative max-w-3xl">
         <p className="section-eyebrow">Sistem izvedbe projekta</p>
 
-        <h2 className="section-title-lg">
+        <h2 className="section-title-lg leading-[1.08] tracking-tight sm:leading-[1.05]">
           Koraki od analize do
           <br className="sm:hidden" />
           primopredaje.
         </h2>
 
-        <p className="section-lead">
+        <p className="section-lead mt-3 leading-[1.5] sm:leading-[1.55]">
           Vsaka faza je jasno definirana, terminsko usklajena in dokumentirana.
         </p>
       </div>
 
-      {/* Mobile – text only */}
-    <div className="relative mt-8 space-y-5 sm:hidden">
+     {/* Mobile – structured steps */}
+<div className="relative mt-8 sm:hidden">
+  <div className="space-y-6">
+    {steps.map((s) => (
+      <div key={s.no} className="relative pb-1">
+        {/* TOP ROW (line + number) */}
+        <div className="flex items-center justify-between">
+          <div
+            className={[
+              "h-px w-10",
+              s.no === "01" ? "bg-[#F6C24A]/70" : "bg-neutral-200",
+            ].join(" ")}
+          />
+
+          <div
+            className={[
+              "text-[14px] font-semibold tracking-[0.02em]",
+              s.no === "01" ? "text-[#F6C24A]" : "text-neutral-400",
+            ].join(" ")}
+          >
+            {s.no}
+          </div>
+        </div>
+
+        {/* CONTENT */}
+        <h3 className="mt-3 text-[15px] font-semibold tracking-tight text-neutral-900">
+          {s.title}
+        </h3>
+
+        <p className="mt-2 text-sm leading-[1.55] text-neutral-600">
+          {s.desc}
+        </p>
+      </div>
+    ))}
+  </div>
+</div>
+
+     
+{/* Tablet / desktop – open process layout */}
+<div className="relative mt-12 hidden sm:grid sm:grid-cols-2 sm:gap-x-10 sm:gap-y-10 lg:grid-cols-4 lg:gap-x-8">
   {steps.map((s, i) => (
     <div
       key={s.no}
-      className={i !== steps.length - 1 ? "border-b border-footer pb-5" : ""}
+      className={[
+        "flex flex-col",
+        i !== steps.length - 1
+          ? "lg:border-r lg:border-neutral-200/70 lg:pr-8"
+          : "",
+      ].join(" ")}
     >
-      <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-400">
-        {s.no}
-      </p>
+      <div className="flex items-center justify-between">
+        <div
+          className={[
+            "h-px w-10",
+            s.no === "01" ? "bg-[#F6C24A]/50" : "bg-neutral-200",
+          ].join(" ")}
+        />
 
-      <h3 className="mt-1 text-base font-semibold tracking-tight text-neutral-900">
+       <div
+  className={[
+    "text-[16px] font-semibold tracking-[0.02em]",
+    s.no === "01"
+      ? "text-[#F6C24A]"
+      : "text-neutral-400",
+  ].join(" ")}
+>
+  {s.no}
+</div>
+      </div>
+
+      <h3 className="mt-5 text-[15px] font-semibold tracking-tight text-neutral-900">
         {s.title}
       </h3>
 
-      <p className="mt-1.5 text-sm leading-relaxed text-neutral-600">
+      <p className="mt-2 max-w-[24ch] text-sm leading-[1.55] text-neutral-600">
         {s.desc}
       </p>
     </div>
   ))}
 </div>
-
-      {/* Tablet / desktop – cards */}
-      <div className="relative mt-12 hidden gap-6 sm:grid sm:grid-cols-2 lg:grid-cols-4">
-        {steps.map((s) => (
-          <div
-            key={s.no}
-            className="group rounded-2xl border border-neutral-200/70 bg-white/60 p-6 transition hover:bg-white hover:shadow-sm"
-          >
-            <div className="flex items-start justify-between">
-              <div className="h-[1px] w-12 bg-neutral-200" />
-              <div
-                className="text-5xl font-semibold tracking-[-0.02em] transition-colors
-                           text-[color:rgba(var(--brand-rgb),0.28)]
-                           group-hover:text-[color:rgba(var(--brand-rgb),0.44)]"
-              >
-                {s.no}
-              </div>
-            </div>
-
-            <h3 className="mt-5 text-sm font-semibold tracking-tight text-neutral-900">
-              {s.title}
-            </h3>
-
-            <p className="mt-2 text-sm leading-relaxed text-neutral-600">
-              {s.desc}
-            </p>
-          </div>
-        ))}
-      </div>
     </div>
   </Container>
 </section>

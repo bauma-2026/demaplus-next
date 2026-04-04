@@ -73,12 +73,18 @@ export default function HomeHeroFeatured() {
         <Container className="relative z-20 h-full">
           <div className="flex h-full items-end pb-10 sm:pb-14">
             <div className="max-w-2xl text-white">
-              <p className="text-xs tracking-wide text-white/75">
-                {featured.workType}
-                {featured.location ? ` • ${featured.location}` : ""}
-                {featured.year ? ` • ${featured.year}` : ""}
-              </p>
+            <p className="text-xs tracking-wide text-white/75">
+  <span className="sm:hidden">
+    {featured.workType}
+    {featured.location ? ` • ${featured.location}` : ""}
+  </span>
 
+  <span className="hidden sm:inline">
+    {featured.workType}
+    {featured.location ? ` • ${featured.location}` : ""}
+    {featured.year ? ` • ${featured.year}` : ""}
+  </span>
+</p>
               {/* ✅ Headline (white + multi-line) */}
              <h1 className="mt-3 text-4xl sm:text-5xl font-semibold tracking-tight leading-[1.05] text-white">
   {headlineLines.map((line, i) => (
@@ -91,9 +97,11 @@ export default function HomeHeroFeatured() {
   ))}
 </h1>
 
-              <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">
-                {subheadline}
-              </p>
+              <p className="mt-5 max-w-[38ch] text-base leading-[1.45] text-white/75 sm:max-w-[42ch] sm:text-lg sm:leading-[1.5]">
+  Projekt vodimo strukturirano —
+  <br />
+  z jasnim nadzorom, roki in odgovornostjo.
+</p>
 
              <div className="mt-7">
   <div className="flex flex-wrap items-center gap-4">

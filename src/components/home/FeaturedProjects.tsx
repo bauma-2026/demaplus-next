@@ -94,30 +94,21 @@ export default function FeaturedProjects() {
         <div ref={root}>
           {/* Header */}
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
-            <div className="max-w-2xl">
-              <p className="section-eyebrow">Reference</p>
+          <div className="max-w-2xl">
+  <p className="section-eyebrow">Reference</p>
 
-             <h2 className="section-title-lg mt-2">
-  Projekti, ki govorijo
-  <br className="sm:hidden" />
-  namesto nas.
-</h2>
-              <p className="section-lead mt-3">
-  Izbrani projekti, kjer je kakovost izvedbe
-  <br className="sm:hidden" />
-  ključnega pomena.
-</p>
-            </div>
+  <h2 className="section-title-lg mt-2 leading-[1.08] sm:leading-[1.05] tracking-tight">
+    Projekti, ki govorijo
+    <br className="sm:hidden" /> namesto nas.
+  </h2>
 
-            <Link
-              href="/reference"
-              className="group hidden sm:inline-flex items-center gap-1.5 text-[13px] text-neutral-500 transition-colors hover:text-neutral-800"
-            >
-              <span>Vse reference</span>
-              <span className="text-neutral-400 transition-transform duration-200 group-hover:translate-x-[2px]">
-                →
-              </span>
-            </Link>
+  <p className="section-lead mt-3 leading-[1.5] sm:leading-[1.55] text-neutral-600">
+    Izbrani projekti, kjer so ključni
+    <br className="sm:hidden" /> natančnost izvedbe, usklajenost in odgovornost.
+  </p>
+</div>
+
+           
           </div>
 
         {/* Mobile slider */}
@@ -168,96 +159,113 @@ export default function FeaturedProjects() {
           </div>
         );
       })}
+{/* End spacer */}
+<div className="w-[0.5px] min-w-[0.5px] shrink-0 snap-start" />
+     {/*
+  End CTA rail (removed – replaced with bottom CTA + spacer)
 
-      {/* End CTA rail */}
-      <Link
-        href="/reference"
-        className="group flex w-[112px] min-w-[112px] shrink-0 snap-start flex-col items-center justify-center text-center -ml-5"
-      >
-        <div
-          className="
-            flex h-[48px] w-[48px] items-center justify-center rounded-full
-            bg-neutral-100/70 ring-1 ring-black/5
-            transition-all duration-200
-            group-hover:scale-[1.04] group-hover:bg-neutral-100
-          "
-        >
-          <span className="text-[24px] leading-none text-neutral-800 transition-transform duration-200 group-hover:translate-x-[2px]">
-            →
-          </span>
-        </div>
+  <Link
+    href="/reference"
+    className="group flex w-[112px] min-w-[112px] shrink-0 snap-start flex-col items-center justify-center text-center -ml-5"
+  >
+    <div
+      className="
+        flex h-[48px] w-[48px] items-center justify-center rounded-full
+        bg-neutral-100/70 ring-1 ring-black/5
+        transition-all duration-200
+        group-hover:scale-[1.04] group-hover:bg-neutral-100
+      "
+    >
+      <span className="text-[24px] leading-none text-neutral-800 transition-transform duration-200 group-hover:translate-x-[2px]">
+        →
+      </span>
+    </div>
 
-        <span className="mt-4 text-[13px] leading-[1.15] text-neutral-800 transition-colors group-hover:text-neutral-950">
-          Vse
-          <br />
-          reference
-        </span>
-      </Link>
+    <span className="mt-4 text-[13px] leading-[1.15] text-neutral-800 transition-colors group-hover:text-neutral-950">
+      Vse
+      <br />
+      reference
+    </span>
+  </Link>
+*/}
     </div>
   </div>
 </div>
-          {/* Desktop grid */}
+        {/* Desktop grid */}
+<div
+  data-fp-grid
+  className="mt-10 hidden gap-x-8 gap-y-10 sm:grid sm:grid-cols-2 lg:gap-x-10 lg:grid-cols-3"
+>
+  {featured.slice(0, 6).map((p) => {
+    const title = decodeHtmlEntities(p.title);
+    const excerpt = decodeHtmlEntities(p.excerpt);
+    const thumb = p.images?.[0] ?? `/reference/${p.slug}/hero.webp`;
+
+    return (
+      <Link
+        key={p.slug}
+        href={`/reference/${p.slug}`}
+        data-fp-item
+        onMouseEnter={onEnter}
+        onMouseLeave={onLeave}
+        className="group block"
+      >
+        <div className="relative aspect-[4/3] overflow-hidden rounded-[14px] bg-neutral-100">
           <div
-            data-fp-grid
-            className="mt-8 hidden gap-x-10 gap-y-10 sm:grid sm:grid-cols-2 lg:grid-cols-3"
+            data-fp-img
+            className="absolute inset-0 will-change-transform"
           >
-            {featured.slice(0, 6).map((p) => {
-              const title = decodeHtmlEntities(p.title);
-              const excerpt = decodeHtmlEntities(p.excerpt);
-              const thumb = p.images?.[0] ?? `/reference/${p.slug}/hero.webp`;
-
-              return (
-                <Link
-                  key={p.slug}
-                  href={`/reference/${p.slug}`}
-                  data-fp-item
-                  onMouseEnter={onEnter}
-                  onMouseLeave={onLeave}
-                  className="group block"
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-neutral-100">
-                    <div
-                      data-fp-img
-                      className="absolute inset-0 will-change-transform"
-                    >
-                      <Image
-                        src={thumb}
-                        alt={title}
-                        fill
-                        sizes="(max-width: 1024px) 50vw, 33vw"
-                        className="object-cover saturate-[0.9] contrast-[1.02]"
-                      />
-                    </div>
-
-                    <div
-                      data-fp-overlay
-                      className="pointer-events-none absolute inset-0 opacity-[0.18]"
-                    >
-                      <div className="absolute inset-0 bg-black" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-white/10" />
-                    </div>
-                  </div>
-
-                  <div data-fp-meta className="mt-4">
-                    <h3 className="card-title transition-colors group-hover:text-neutral-700">
-                      {title}
-                    </h3>
-
-                    {excerpt ? (
-                      <p className="card-meta line-clamp-2">{excerpt}</p>
-                    ) : null}
-
-                    <div className="card-link group-hover:text-neutral-700">
-                      Poglej projekt
-                      <span className="translate-y-[0.5px] text-neutral-400 transition-transform group-hover:translate-x-[2px]">
-                        →
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+            <Image
+              src={thumb}
+              alt={title}
+              fill
+              sizes="(max-width: 1024px) 50vw, 33vw"
+              className="object-cover saturate-[0.9] contrast-[1.02] transition-transform duration-700 group-hover:scale-[1.03]"
+            />
           </div>
+
+          <div
+            data-fp-overlay
+            className="pointer-events-none absolute inset-0 opacity-[0.18] transition-opacity duration-300 group-hover:opacity-[0.22]"
+          >
+            <div className="absolute inset-0 bg-black" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-white/10" />
+          </div>
+        </div>
+
+        <div data-fp-meta className="mt-4 space-y-2">
+          <h3 className="card-title transition-colors duration-200 group-hover:text-neutral-800">
+            {title}
+          </h3>
+
+          {excerpt ? (
+            <p className="card-meta line-clamp-2">{excerpt}</p>
+          ) : null}
+
+          <div className="card-link flex items-center gap-1.5 text-neutral-600 transition-colors duration-200 group-hover:text-neutral-800">
+            <span>Poglej projekt</span>
+            <span className="translate-y-[0.5px] text-neutral-400 transition-transform duration-200 group-hover:translate-x-[2px]">
+              →
+            </span>
+          </div>
+        </div>
+      </Link>
+    );
+  })}
+</div>
+
+
+<div className="mt-6 sm:mt-8">
+  <Link
+    href="/reference"
+    className="group inline-flex items-center gap-2 rounded-full border border-neutral-300 px-5 py-2.5 text-sm font-medium text-neutral-900 transition-all hover:bg-neutral-100 hover:border-neutral-400"
+  >
+    Vse reference
+    <span className="transition-transform group-hover:translate-x-[2px]">
+      →
+    </span>
+  </Link>
+</div>
         </div>
       </Container>
     </section>

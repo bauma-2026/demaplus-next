@@ -37,7 +37,7 @@ export const homeHero: HomeHero = {
   ],
 
   subheadline:
-    "Celovito vodenje investicije od začetka do tehničnega prevzema.",
+    "Projekt vodimo strukturirano — z jasnim nadzorom, roki in odgovornostjo.",
 
   primaryCta: {
     label: "Izbrani projekti",
@@ -53,9 +53,9 @@ export const homeHero: HomeHero = {
     title: "Švicarija",
     slug: "svicarija",
     image: "/images/hero/svicarija.jpg",
-    workType: "Ideja",
+    workType: "Inženiring",
     location: "Izvedba",
-    year: "Prevzem",
+    year: "",
     excerpt:
       "Rekonstrukcije, novogradnje in inženiring z nadzorom kakovosti ter jasno odgovornostjo.",
   },

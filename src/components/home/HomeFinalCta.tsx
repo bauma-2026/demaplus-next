@@ -28,11 +28,10 @@ export default function HomeFinalCta() {
             Načrtujete projekt?
           </h2>
 
-          <p className="mt-3 text-sm leading-relaxed text-white/75 sm:text-base">
-            Stopite v stik za strokovni posvet ali pripravo ponudbe.
-            Projekt vodimo sistematično — z jasno strukturo,
-            nadzorom in odgovornostjo.
-          </p>
+         <p className="mt-3 text-sm leading-relaxed text-white/75 sm:text-base max-w-[60ch] mx-auto text-center">
+  Stopite v stik za strokovni posvet ali pripravo ponudbe.
+  Projekt vodimo sistematično — z jasno strukturo, nadzorom in odgovornostjo.
+</p>
 
           <div className="mt-6">
             <Link
