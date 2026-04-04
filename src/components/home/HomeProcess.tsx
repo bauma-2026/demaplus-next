@@ -43,8 +43,7 @@ export default function HomeProcess() {
 
         <h2 className="section-title-lg leading-[1.08] tracking-tight sm:leading-[1.05]">
           Koraki od analize do
-          <br className="sm:hidden" />
-          primopredaje.
+          <br className="sm:hidden" /> primopredaje.
         </h2>
 
         <p className="section-lead mt-3 leading-[1.5] sm:leading-[1.55]">
