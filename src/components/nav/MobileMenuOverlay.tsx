@@ -80,43 +80,98 @@ export default function MobileMenuOverlay({
       >
         <div className="flex min-h-screen flex-col bg-white">
           {/* Header row */}
-          <div className="flex h-[72px] items-center justify-between px-5 border-b border-neutral-200">
-            <DemaPlusLogo className="h-7 w-auto" />
-            <MobileMenuToggle open={open} onToggle={onClose} />
-          </div>
+         <div className="flex h-[64px] items-center justify-between border-b border-neutral-200 4.5">
+  <DemaPlusLogo className="h-[24px] w-auto" />
+  <MobileMenuToggle open={open} onToggle={onClose} />
+</div>
 
-          {/* Links */}
-          <div className="px-6 py-7">
-            {Array.isArray(nav) && nav.length > 0 ? (
-              <div className="space-y-4">
-                {nav.map((item, index) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={onClose}
-                    className={[
-                      "block py-2 text-[18px] leading-none tracking-[-0.01em] font-normal",
-                      "text-neutral-500 transition-[opacity,transform,color] duration-500 ease-[cubic-bezier(.16,1,.3,1)]",
-                      "hover:text-neutral-900",
-                      navEntered
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-2",
-                    ].join(" ")}
-                    style={{
-                      transitionDelay: navEntered ? `${80 + index * 45}ms` : "0ms",
-                    }}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="rounded-xl bg-neutral-50 px-4 py-4 text-sm text-neutral-700">
-                Ni linkov v nav (nav je prazen).
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Links */}
+<div className="px-5 py-7">
+  {Array.isArray(nav) && nav.length > 0 ? (
+    <>
+      {/* PRIMARY */}
+      <div className="flex flex-col gap-4">
+        {nav
+          .filter((item) => item.href !== "/o-nas" && item.href !== "/kontakt")
+          .map((item, index) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onClose}
+              className={[
+                "block py-2 text-[16px] leading-none tracking-[-0.01em] font-normal",
+                "text-neutral-500 transition-[opacity,transform,color] duration-500 ease-[cubic-bezier(.16,1,.3,1)]",
+                "active:text-neutral-900",
+                navEntered
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-2 opacity-0",
+              ].join(" ")}
+              style={{
+                transitionDelay: navEntered ? `${80 + index * 45}ms` : "0ms",
+              }}
+            >
+              {item.label}
+            </Link>
+          ))}
+      </div>
+
+      {/* SECONDARY */}
+      <div className="mt-8 border-t border-neutral-200/60 pt-8">
+        {nav
+          .filter((item) => item.href === "/o-nas")
+          .map((item, index) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onClose}
+              className={[
+                "block py-2.5 text-[16px] font-medium leading-none tracking-[-0.01em] text-neutral-700",
+                "text-neutral-700 transition-[opacity,transform,color] duration-500 ease-[cubic-bezier(.16,1,.3,1)]",
+                "active:text-neutral-900",
+                navEntered
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-2 opacity-0",
+              ].join(" ")}
+              style={{
+                transitionDelay: navEntered ? `${190 + index * 45}ms` : "0ms",
+              }}
+            >
+              {item.label}
+            </Link>
+          ))}
+
+        {nav
+          .filter((item) => item.href === "/kontakt")
+          .map((item, index) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onClose}
+            className={[
+  "mt-8 flex w-full items-center justify-center rounded-[999px]",
+  "border border-neutral-900 bg-neutral-900 text-white",
+  "px-5 py-3 text-sm font-medium",
+  "transition-[opacity,transform,background-color] duration-500 ease-[cubic-bezier(.16,1,.3,1)]",
+  "active:bg-neutral-800",
+  navEntered
+    ? "translate-y-0 opacity-100"
+    : "translate-y-2 opacity-0",
+].join(" ")}
+style={{
+  transitionDelay: navEntered ? `${240 + index * 45}ms` : "0ms",
+}}
+            >
+              Kontakt
+            </Link>
+          ))}
+      </div>
+    </>
+  ) : (
+    <div className="rounded-xl bg-neutral-50 px-4 py-4 text-sm text-neutral-700">
+      Ni linkov v nav (nav je prazen).
+    </div>
+  )}
+</div>        </div>
       </div>
     </div>,
     portalTarget

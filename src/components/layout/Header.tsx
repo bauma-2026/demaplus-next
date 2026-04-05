@@ -71,7 +71,7 @@ export default function Header() {
           href="/"
           className="inline-flex items-center leading-none text-neutral-900 transition-colors duration-200 ease-out hover:text-[#758e9b]"
         >
-          <DemaPlusLogo className="h-[22px] w-auto lg:h-6" />
+          <DemaPlusLogo className="h-[24px] w-auto lg:h-[26px]" />
         </Link>
 
         <nav className="flex items-center gap-7 text-sm">
@@ -130,7 +130,7 @@ export default function Header() {
         className="inline-flex items-center leading-none text-neutral-900"
         aria-label="Domov"
       >
-        <DemaPlusLogo className="h-[22px] w-auto" />
+        <DemaPlusLogo className="h-[24px] w-auto" />
       </Link>
 
       <div className="relative z-[10001] flex h-full items-center">
