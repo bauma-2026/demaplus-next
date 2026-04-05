@@ -33,28 +33,29 @@ export default function ProjectMeta({
   if (!items.length) return null;
 
   return (
-<aside className="rounded-2xl border border-panel bg-panel p-6 sm:p-7">
-
+    <aside className="rounded-2xl border border-panel bg-panel p-5 sm:p-6">
       {/* TITLE */}
       <div className="text-sm font-medium text-neutral-900">
         Podrobnosti
       </div>
 
       {/* ITEMS */}
-      <dl className="mt-5 space-y-5">
+      <dl className="mt-4">
         {items.map((item, i) => (
-          <div key={i} className="space-y-1">
+          <div
+            key={i}
+            className={[
+              "py-4",
+              i < items.length - 1 ? "border-b border-neutral-200/70" : "",
+            ].join(" ")}
+          >
             <dt className="text-[11px] uppercase tracking-[0.08em] text-neutral-400">
               {item.label}
             </dt>
 
-            <dd className="text-sm text-neutral-800 leading-relaxed">
+            <dd className="mt-1.5 text-sm leading-relaxed text-neutral-800">
               {item.value}
             </dd>
-
-            {i < items.length - 1 && (
-              <div className="pt-4 border-t border-neutral-200/70" />
-            )}
           </div>
         ))}
       </dl>

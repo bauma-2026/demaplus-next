@@ -42,34 +42,34 @@ export default function ReferenceGridCard({
         <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/[0.03]" />
       </div>
 
-      {/* Meta */}
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <div className="min-w-0 text-[11px] uppercase tracking-[0.08em] text-neutral-400">
-          {meta ? <span className="block truncate">{meta}</span> : <span>&nbsp;</span>}
-        </div>
+    {/* Meta */}
+<div className="mt-2.5 flex items-center justify-between gap-3">
+  <div className="min-w-0 text-[11px] uppercase tracking-[0.08em] text-neutral-400">
+    {meta ? <span className="block truncate">{meta}</span> : <span>&nbsp;</span>}
+  </div>
 
-        {year ? (
-          <div className="shrink-0 text-[11px] text-neutral-400">{year}</div>
-        ) : null}
-      </div>
+  {year ? (
+    <div className="shrink-0 text-[11px] text-neutral-400">{year}</div>
+  ) : null}
+</div>
 
-      {/* Title */}
-      <h3 className="mt-1 text-[15px] font-semibold leading-snug tracking-tight text-neutral-900 transition-colors duration-300 sm:text-base md:group-hover:text-neutral-700">
-        {title}
-      </h3>
+{/* Title */}
+<h3 className="mt-1 text-[15px] font-semibold leading-snug tracking-tight text-neutral-900 transition-colors duration-300 sm:text-base md:group-hover:text-neutral-700">
+  {title}
+</h3>
 
-      {/* CTA */}
-      <div className="mt-1 text-xs text-neutral-500 transition-colors duration-300 group-hover:text-neutral-900">
-        <span className="inline-flex items-center gap-1">
-          Poglej projekt
-          <span
-            aria-hidden
-            className="transition-transform duration-300 ease-out group-hover:translate-x-1"
-          >
-            →
-          </span>
-        </span>
-      </div>
+{/* CTA */}
+<div className="mt-1 text-xs text-neutral-500 transition-colors duration-300 group-hover:text-neutral-900">
+  <span className="inline-flex items-center gap-1">
+    Poglej projekt
+    <span
+      aria-hidden
+      className="transition-transform duration-300 ease-out group-hover:translate-x-1"
+    >
+      →
+    </span>
+  </span>
+</div>
     </Link>
   );
 }

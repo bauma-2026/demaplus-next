@@ -238,100 +238,103 @@ export default function ReferenceGrid({
   }, [activeFilter, shown.length]);
 
   return (
-    <div className="mt-6 sm:mt-8">
-      <div className="mb-8 flex flex-wrap gap-2.5 sm:mb-10">
-        {filters.map((filter) => {
-          const isActive = activeFilter === filter.key;
+  <div className="mt-4 sm:mt-5">
+    {/* FILTERS */}
+    <div className="mb-6 sm:mb-7 flex flex-wrap gap-2.5">
+      {filters.map((filter) => {
+        const isActive = activeFilter === filter.key;
 
-          return (
-            <button
-              key={filter.key}
-              type="button"
-              onClick={() => setActiveFilter(filter.key)}
-              className={[
-                "inline-flex items-center rounded-full px-4 py-[8px] text-sm transition-all duration-200",
-                isActive ? "btn-pill-active" : "btn-pill-idle",
-              ].join(" ")}
-              aria-pressed={isActive}
-            >
-              {filter.label}
-            </button>
-          );
-        })}
-      </div>
-
-      <div
-        ref={gridRef}
-        className="grid gap-x-8 gap-y-11 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-12 xl:grid-cols-3 xl:gap-y-14"
-      >
-        {shown.map((p) => (
-          <div key={p.slug} data-ref-card>
-            <ReferenceGridCard
-              href={`/reference/${p.slug}`}
-              title={p.title}
-              image={p.image}
-              workType={p.workType ?? null}
-            />
-          </div>
-        ))}
-      </div>
-
-      {!shown.length ? (
-        <div className="mt-14 text-center text-sm text-neutral-500">
-          Za izbrani filter trenutno ni projektov.
-        </div>
-      ) : canLoadMore ? (
-        <div className="mt-16 flex justify-center">
+        return (
           <button
+            key={filter.key}
             type="button"
-            onClick={() =>
-              setVisible((v) => Math.min(v + step, filteredItems.length))
-            }
-            className="group inline-flex min-w-[154px] items-center justify-center gap-2.5 rounded-full border border-neutral-300 bg-white px-6 py-3 text-sm font-medium text-neutral-900 transition-all duration-300 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900/10 active:scale-[0.98]"
+            onClick={() => setActiveFilter(filter.key)}
+            className={[
+              "inline-flex items-center rounded-full px-4 py-[8px] text-sm transition-all duration-200",
+              isActive ? "btn-pill-active" : "btn-pill-idle",
+            ].join(" ")}
+            aria-pressed={isActive}
           >
-            <span>Naloži več</span>
-            <span
-              aria-hidden
-              className="transition-transform duration-300 group-hover:translate-x-0.5"
-            >
-              →
-            </span>
+            {filter.label}
           </button>
+        );
+      })}
+    </div>
+
+    {/* GRID */}
+    <div
+      ref={gridRef}
+      className="grid gap-x-6 gap-y-6 sm:grid-cols-2 sm:gap-x-7 sm:gap-y-7 xl:grid-cols-3 xl:gap-x-8 xl:gap-y-8"
+    >
+      {shown.map((p) => (
+        <div key={p.slug} data-ref-card>
+          <ReferenceGridCard
+            href={`/reference/${p.slug}`}
+            title={p.title}
+            image={p.image}
+            workType={p.workType ?? null}
+          />
         </div>
-      ) : (
-        <div className="mt-14 text-center text-sm text-neutral-400">
-          To je vse.
-        </div>
-      )}
+      ))}
+    </div>
 
-      {/* SEO block */}
-      <div className="mt-20 border-t border-neutral-200 pt-12 sm:mt-24 sm:pt-14">
-        <div className="max-w-3xl">
-          <h2 className="text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
-            Gradbeni nadzor, rekonstrukcije in novogradnje
-          </h2>
+    {/* EMPTY / LOAD MORE */}
+    {!shown.length ? (
+      <div className="mt-12 text-center text-sm text-neutral-500">
+        Za izbrani filter trenutno ni projektov.
+      </div>
+    ) : canLoadMore ? (
+      <div className="mt-14 flex justify-center">
+        <button
+          type="button"
+          onClick={() =>
+            setVisible((v) => Math.min(v + step, filteredItems.length))
+          }
+          className="group inline-flex min-w-[154px] items-center justify-center gap-2.5 rounded-full border border-neutral-300 bg-white px-6 py-3 text-sm font-medium text-neutral-900 transition-all duration-300 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900/10 active:scale-[0.98]"
+        >
+          <span>Naloži več</span>
+          <span
+            aria-hidden
+            className="transition-transform duration-300 group-hover:translate-x-0.5"
+          >
+            →
+          </span>
+        </button>
+      </div>
+    ) : (
+      <div className="mt-12 text-center text-sm text-neutral-400">
+        To je vse.
+      </div>
+    )}
 
-          <div className="mt-5 space-y-4 text-sm leading-relaxed text-neutral-700 sm:text-[15px]">
-            <p>
-              Dema Plus izvaja celovito vodenje investicijskih projektov,
-              vključno z gradbenim nadzorom, rekonstrukcijami objektov,
-              novogradnjami in strokovnim inženiringom.
-            </p>
+    {/* SEO BLOCK */}
+    <div className="mt-16 border-t border-neutral-200 pt-10 sm:mt-20 sm:pt-12">
+      <div className="max-w-3xl">
+        <h2 className="text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
+          Gradbeni nadzor, rekonstrukcije in novogradnje
+        </h2>
 
-            <p>
-              Reference vključujejo javne in stanovanjske objekte ter zahtevnejše
-              rekonstrukcije, kjer je ključna usklajena izvedba, nadzor kakovosti
-              in pregledno vodenje vseh faz projekta.
-            </p>
+        <div className="mt-5 space-y-4 text-sm leading-relaxed text-neutral-700 sm:text-[15px]">
+          <p>
+            Dema Plus izvaja celovito vodenje investicijskih projektov,
+            vključno z gradbenim nadzorom, rekonstrukcijami objektov,
+            novogradnjami in strokovnim inženiringom.
+          </p>
 
-            <p>
-              Investitorjem zagotavljamo strokovno podporo od začetne presoje do
-              izvedbe in primopredaje, predvsem na področju Ljubljane in širše
-              Slovenije.
-            </p>
-          </div>
+          <p>
+            Reference vključujejo javne in stanovanjske objekte ter zahtevnejše
+            rekonstrukcije, kjer je ključna usklajena izvedba, nadzor kakovosti
+            in pregledno vodenje vseh faz projekta.
+          </p>
+
+          <p>
+            Investitorjem zagotavljamo strokovno podporo od začetne presoje do
+            izvedbe in primopredaje, predvsem na področju Ljubljane in širše
+            Slovenije.
+          </p>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

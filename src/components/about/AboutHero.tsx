@@ -7,7 +7,7 @@ const HERO_IMAGE = "/images/hero/o-nas-hero.webp";
 export default function AboutHero() {
   return (
     <section className="relative">
-      <div className="relative h-[34vh] min-h-[300px] sm:h-[36vh] sm:min-h-[340px] lg:h-[38vh] lg:min-h-[380px] w-full overflow-hidden bg-neutral-200">
+      <div className="relative h-[30vh] min-h-[280px] w-full overflow-hidden bg-neutral-200 sm:h-[34vh] sm:min-h-[320px] lg:h-[36vh] lg:min-h-[360px]">
         <Image
           src={HERO_IMAGE}
           alt="Dema Plus – O nas"
@@ -22,17 +22,17 @@ export default function AboutHero() {
         <div className="absolute inset-0 z-10 bg-gradient-to-l from-black/40 via-black/18 to-transparent" />
 
         <Container className="relative z-10 h-full">
-          <div className="flex h-full items-end pb-8 sm:pb-10 lg:pb-12">
+          <div className="flex h-full items-end pb-7 sm:pb-9 lg:pb-10">
             <div className="max-w-3xl text-white">
               <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
                 O nas
               </h1>
 
-              <p className="mt-3 text-base leading-relaxed text-white/82 sm:mt-4 sm:text-lg">
+              <p className="mt-3 text-base leading-relaxed text-white/82 sm:text-lg">
                 Gradimo z jasno strukturo dela in odgovornim vodenjem investicij.
               </p>
 
-              <div className="mt-5 flex flex-wrap gap-3 sm:mt-6">
+              <div className="mt-4 flex flex-wrap gap-3 sm:mt-5">
                 <HeroButton href="/reference" variant="primary">
                   Poglej reference
                 </HeroButton>

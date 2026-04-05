@@ -14,19 +14,27 @@ export default function MobileMenuToggle({
   ariaControls = "mobile-menu",
 }: MobileMenuToggleProps) {
   return (
-    <button
-      type="button"
-      aria-label={open ? "Zapri meni" : "Odpri meni"}
-      aria-controls={ariaControls}
-      aria-expanded={open}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onToggle();
-      }}
-      className="relative inline-flex h-10 w-10 items-center justify-center appearance-none border-0 bg-transparent p-0 outline-none select-none transition-transform duration-150 active:scale-95 [-webkit-tap-highlight-color:transparent]"
-    >
-      <MenuToggle open={open} />
-    </button>
+   <button
+  type="button"
+  aria-label={open ? "Zapri meni" : "Odpri meni"}
+  aria-expanded={open}
+  onClick={onToggle}
+className="group relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-neutral-200 bg-white transition hover:bg-neutral-50 focus:outline-none">
+  {/* TOP */}
+  <span
+    className={[
+      "absolute block h-[1.5px] w-[13px] rounded-full bg-neutral-900 transition-all duration-300 ease-[cubic-bezier(.16,1,.3,1)]",
+      open ? "translate-y-0 rotate-45" : "-translate-y-[3px]",
+    ].join(" ")}
+  />
+
+  {/* BOTTOM */}
+  <span
+    className={[
+      "absolute block h-[1.5px] w-[13px] rounded-full bg-neutral-900 transition-all duration-300 ease-[cubic-bezier(.16,1,.3,1)]",
+      open ? "translate-y-0 -rotate-45" : "translate-y-[3px]",
+    ].join(" ")}
+  />
+</button>
   );
 }

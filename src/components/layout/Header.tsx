@@ -62,90 +62,91 @@ export default function Header() {
   }, [menuOpen]);
 
   return (
-<header className="sticky top-0 z-[10000] isolate border-b border-header bg-[var(--header-bg)]">    <Container className="relative flex h-[72px] items-center justify-between">
-        {/* DESKTOP */}
-        <div className="hidden w-full items-center justify-between md:flex">
-          <div className="flex items-center gap-10">
-            <Link
-              href="/"
-              className="inline-flex items-center leading-none text-neutral-900 transition-colors duration-200 ease-out hover:text-[#758e9b]"
-            >
-              <DemaPlusLogo className="h-7 w-auto" />
-            </Link>
+<header className="sticky top-0 z-[10000] isolate border-b border-header bg-[var(--header-bg)]">
+  <Container className="relative flex h-[64px] items-center justify-between">
+    {/* DESKTOP */}
+    <div className="hidden w-full items-center justify-between md:flex">
+      <div className="flex items-center gap-8 lg:gap-10">
+        <Link
+          href="/"
+          className="inline-flex items-center leading-none text-neutral-900 transition-colors duration-200 ease-out hover:text-[#758e9b]"
+        >
+          <DemaPlusLogo className="h-[22px] w-auto lg:h-6" />
+        </Link>
 
-            <nav className="flex items-center gap-8 text-sm">
-              {mobileNav
-                .filter((i) => i.href !== "/kontakt" && i.href !== "/o-nas")
-                .map((item) => {
-                  const active = isActive(pathname, item.href);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={[
-                        "border-b pb-1 transition-colors duration-200",
-                        active
-                          ? "border-b-[#758e9b] text-neutral-900"
-                          : "border-b-transparent text-neutral-700 hover:border-b-[#758e9b]/40 hover:text-[#758e9b]",
-                      ].join(" ")}
-                    >
-                      {item.label}
-                    </Link>
-                  );
-                })}
-            </nav>
-          </div>
+        <nav className="flex items-center gap-7 text-sm">
+          {mobileNav
+            .filter((i) => i.href !== "/kontakt" && i.href !== "/o-nas")
+            .map((item) => {
+              const active = isActive(pathname, item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={[
+                    "border-b pb-1 transition-colors duration-200",
+                    active
+                      ? "border-b-[#758e9b] text-neutral-900"
+                      : "border-b-transparent text-neutral-700 hover:border-b-[#758e9b]/40 hover:text-[#758e9b]",
+                  ].join(" ")}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+        </nav>
+      </div>
 
-          <div className="flex items-center gap-6">
-            <Link
-              href="/o-nas"
-              className={[
-                "border-b pb-1 transition-colors duration-200",
-                isActive(pathname, "/o-nas")
-                  ? "border-b-[#758e9b] text-neutral-900"
-                  : "border-b-transparent text-neutral-700 hover:border-b-[#758e9b]/40 hover:text-[#758e9b]",
-              ].join(" ")}
-            >
-              O nas
-            </Link>
+      <div className="flex items-center gap-6">
+       <Link
+  href="/o-nas"
+  className={[
+    "text-sm font-medium border-b pb-1 transition-colors duration-200",
+    isActive(pathname, "/o-nas")
+      ? "border-b-[#758e9b] text-neutral-900"
+      : "border-b-transparent text-neutral-700 hover:border-b-[#758e9b]/40 hover:text-[#758e9b]",
+  ].join(" ")}
+>
+  O nas
+</Link>
 
-            <Link
-              href="/kontakt"
-              className={[
-                "rounded-full border px-5 py-2 text-sm transition-all duration-200",
-                "border-neutral-900 bg-neutral-900 text-white hover:border-neutral-800 hover:bg-neutral-800",
-                "hover:shadow-[0_0_0_3px_rgba(117,142,155,0.25)]",
-              ].join(" ")}
-            >
-              Kontakt
-            </Link>
-          </div>
-        </div>
+        <Link
+          href="/kontakt"
+          className={[
+            "rounded-full border px-5 py-[7px] text-sm transition-all duration-200",
+            "border-neutral-900 bg-neutral-900 text-white hover:border-neutral-800 hover:bg-neutral-800",
+            "hover:shadow-[0_0_0_3px_rgba(117,142,155,0.25)]",
+          ].join(" ")}
+        >
+          Kontakt
+        </Link>
+      </div>
+    </div>
 
-        {/* MOBILE */}
-        <div className="flex w-full items-center justify-between md:hidden">
-          <Link
-            href="/"
-            className="inline-flex items-center leading-none text-neutral-900"
-            aria-label="Domov"
-          >
-            <DemaPlusLogo className="h-7 w-auto" />
-          </Link>
+    {/* MOBILE */}
+    <div className="flex h-full w-full items-center justify-between md:hidden">
+      <Link
+        href="/"
+        className="inline-flex items-center leading-none text-neutral-900"
+        aria-label="Domov"
+      >
+        <DemaPlusLogo className="h-[22px] w-auto" />
+      </Link>
 
-          <div className="relative z-[10001]">
-            <MobileMenuToggle
-              open={menuOpen}
-              onToggle={() => setMenuOpen((v) => !v)}
-            />
-          </div>
-        </div>
-      </Container>
+      <div className="relative z-[10001] flex h-full items-center">
+        <MobileMenuToggle
+          open={menuOpen}
+          onToggle={() => setMenuOpen((v) => !v)}
+        />
+      </div>
+    </div>
+  </Container>
 
-      <MobileMenuOverlay
-        open={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        nav={mobileNav}
-      />
-    </header>
+  <MobileMenuOverlay
+    open={menuOpen}
+    onClose={() => setMenuOpen(false)}
+    nav={mobileNav}
+  />
+</header>
   );
 }

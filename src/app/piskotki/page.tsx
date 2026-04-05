@@ -4,67 +4,78 @@ import Container from "@/components/layout/Container";
 export default function CookiesPage() {
   return (
     <>
-     <PageHero
-  kicker="Pravni okvir"
-  title="Politika piškotkov"
-  desc="Informacije o uporabi piškotkov na spletni strani Dema Plus."
-  image="/images/legal/piskotki-hero.webp"
-/>
-<div className="border-t border-neutral-200/70" />
-      <Container className="max-w-3xl py-12">
-        <p className="text-sm text-neutral-500">
-          Zadnja posodobitev: {new Date().getFullYear()}
-        </p>
+      <PageHero
+        kicker="Pravni okvir"
+        title="Politika piškotkov"
+        desc="Informacije o uporabi piškotkov na spletni strani Dema Plus."
+        image="/images/legal/piskotki-hero.webp"
+      />
 
-        <div className="mt-10 space-y-10 text-neutral-700 leading-relaxed">
+      <div className="border-t border-neutral-200/70" />
 
-          <section>
-            <h2 className="text-lg font-semibold text-neutral-900">
-              Kaj so piškotki
-            </h2>
+      <section className="py-10 sm:py-12">
+        <Container className="max-w-5xl">
+          <p className="text-sm text-neutral-500">
+            Zadnja posodobitev: {new Date().getFullYear()}
+          </p>
 
-            <p className="mt-3">
-              Piškotki so majhne tekstovne datoteke, ki jih spletna stran shrani
-              na vašo napravo ob obisku. Omogočajo osnovno delovanje strani ter
-              pomagajo zagotoviti boljšo uporabniško izkušnjo.
-            </p>
-          </section>
+          <div className="mt-8 space-y-8 text-neutral-700 sm:mt-10 sm:space-y-10">
+            <section>
+              <h2 className="text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
+                Kaj so piškotki
+              </h2>
 
-          <section>
-            <h2 className="text-lg font-semibold text-neutral-900">
-              Katere piškotke uporabljamo
-            </h2>
+              <div className="mt-4 max-w-[72ch] space-y-4 text-[15px] leading-[1.8] sm:text-[16px]">
+                <p>
+                  Piškotki so majhne tekstovne datoteke, ki jih spletna stran
+                  shrani na vašo napravo ob obisku. Omogočajo osnovno delovanje
+                  strani ter pomagajo zagotoviti boljšo uporabniško izkušnjo.
+                </p>
+              </div>
+            </section>
 
-            <p className="mt-3">
-              Ta spletna stran uporablja samo nujne piškotke, ki so potrebni za
-              pravilno delovanje spletne strani.
-            </p>
+            <section>
+              <h2 className="text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
+                Katere piškotke uporabljamo
+              </h2>
 
-            <p className="mt-3">
-              Ti piškotki ne zbirajo osebnih podatkov in se uporabljajo izključno
-              za zagotavljanje osnovnih funkcionalnosti strani.
-            </p>
-          </section>
+              <div className="mt-4 max-w-[72ch] space-y-4 text-[15px] leading-[1.8] sm:text-[16px]">
+                <p>
+                  Ta spletna stran uporablja samo nujne piškotke, ki so potrebni
+                  za pravilno delovanje spletne strani.
+                </p>
 
-          <section>
-            <h2 className="text-lg font-semibold text-neutral-900">
-              Upravljanje piškotkov
-            </h2>
+                <p>
+                  Ti piškotki ne zbirajo osebnih podatkov in se uporabljajo
+                  izključno za zagotavljanje osnovnih funkcionalnosti strani.
+                </p>
+              </div>
+            </section>
 
-            <p className="mt-3">
-              Nastavitve piškotkov lahko kadar koli spremenite preko možnosti
-              <strong> »Nastavitve piškotkov« </strong>
-              v nogi spletne strani.
-            </p>
+            <section>
+              <h2 className="text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
+                Upravljanje piškotkov
+              </h2>
 
-            <p className="mt-3">
-              Piškotke lahko upravljate tudi v nastavitvah svojega spletnega
-              brskalnika.
-            </p>
-          </section>
+              <div className="mt-4 max-w-[72ch] space-y-4 text-[15px] leading-[1.8] sm:text-[16px]">
+                <p>
+                  Nastavitve piškotkov lahko kadar koli spremenite preko možnosti
+                  <strong className="font-semibold text-neutral-900">
+                    {" "}
+                    »Nastavitve piškotkov«{" "}
+                  </strong>
+                  v nogi spletne strani.
+                </p>
 
-        </div>
-      </Container>
+                <p>
+                  Piškotke lahko upravljate tudi v nastavitvah svojega spletnega
+                  brskalnika.
+                </p>
+              </div>
+            </section>
+          </div>
+        </Container>
+      </section>
     </>
   );
 }

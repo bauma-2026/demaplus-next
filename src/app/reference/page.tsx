@@ -68,34 +68,40 @@ export default async function ReferenceIndexPage({ searchParams }: PageProps) {
   const initial = Math.min(page * step, items.length);
 
   return (
-    <section className="pb-12 pt-12 sm:pb-14 sm:pt-14">
-      <Container>
-        <div className="border-b border-neutral-200/70 pb-6 sm:pb-8">
-          <Reveal variant="hero">
-            <PageHero
-              className="max-w-4xl"
-              kicker="Reference"
-              title="Reference"
-              desc="Izbor projektov – novogradnje, rekonstrukcije in zahtevne sanacije z doslednim nadzorom kakovosti."
-            />
-      </Reveal>
-</div>
-
-<div className="pt-0">
-  <ReferenceGrid
-    items={items}
-    initial={initial}
-    step={step}
-    filters={[
-      { key: "all", label: "Vse" },
-      { key: "novogradnje", label: "Novogradnje" },
-      { key: "rekonstrukcije", label: "Rekonstrukcije" },
-      { key: "javni-objekti", label: "Javni objekti" },
-      { key: "stanovanjski-objekti", label: "Stanovanjski objekti" },
-    ]}
+  <section className="pb-12 pt-8 sm:pb-14 sm:pt-8 lg:pt-9">
+  <Container>
+    <div className="border-b border-neutral-200/70 pb-5 sm:pb-6">
+<Reveal variant="hero">
+  <PageHero
+    className="max-w-[40ch]"
+    kicker="Reference"
+    title={
+  <>
+    Projekti, ki potrjujejo
+    <br />
+    naš način dela.
+  </>
+}
+    desc="Izbor projektov, kjer so ključni natančnost izvedbe, usklajenost in odgovornost."
   />
-</div>
-      </Container>
-    </section>
+</Reveal>
+    </div>
+
+    <div className="pt-1 sm:pt-2">
+      <ReferenceGrid
+        items={items}
+        initial={initial}
+        step={step}
+        filters={[
+          { key: "all", label: "Vse" },
+          { key: "novogradnje", label: "Novogradnje" },
+          { key: "rekonstrukcije", label: "Rekonstrukcije" },
+          { key: "javni-objekti", label: "Javni objekti" },
+          { key: "stanovanjski-objekti", label: "Stanovanjski objekti" },
+        ]}
+      />
+    </div>
+  </Container>
+</section>
   );
 }

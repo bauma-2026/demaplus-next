@@ -267,168 +267,168 @@ const relatedItems = shuffleArray(
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <Container>
-        <header className="pt-10 sm:pt-12">
-          <div className="flex items-center justify-between gap-4 text-sm leading-none">
-            <Link
-              href="/reference"
-              className="inline-flex items-center gap-2 text-sm text-neutral-600 transition-colors duration-300 hover:text-neutral-900"
-            >
-              <span className="text-sm leading-none transition-transform duration-300 hover:-translate-x-0.5">
-                ←
-              </span>
-              <span>Nazaj na reference</span>
-            </Link>
+    <Container>
+  <header className="pt-8 sm:pt-8 lg:pt-9">
+    <div className="flex items-center justify-between gap-4 text-sm leading-none">
+      <Link
+        href="/reference"
+        className="inline-flex items-center gap-2 text-sm text-neutral-600 transition-colors duration-300 hover:text-neutral-900"
+      >
+        <span className="text-sm leading-none transition-transform duration-300 hover:-translate-x-0.5">
+          ←
+        </span>
+        <span>Nazaj na reference</span>
+      </Link>
 
-            <div className="hidden items-center gap-3 whitespace-nowrap text-neutral-500 lg:flex">
-              {prevSlug ? (
-                <Link
-                  href={`/reference/${prevSlug}`}
-                  className="transition hover:text-neutral-900"
-                >
-                  ← Prejšnji
-                </Link>
-              ) : (
-                <span className="text-neutral-300">← Prejšnji</span>
-              )}
+      <div className="hidden items-center gap-3 whitespace-nowrap text-neutral-500 lg:flex">
+        {prevSlug ? (
+          <Link
+            href={`/reference/${prevSlug}`}
+            className="transition hover:text-neutral-900"
+          >
+            ← Prejšnji
+          </Link>
+        ) : (
+          <span className="text-neutral-300">← Prejšnji</span>
+        )}
 
-              <span className="text-neutral-200" aria-hidden>
-                |
-              </span>
+        <span className="text-neutral-200" aria-hidden>
+          |
+        </span>
 
-              {nextSlug ? (
-                <Link
-                  href={`/reference/${nextSlug}`}
-                  className="transition hover:text-neutral-900"
-                >
-                  Naslednji →
-                </Link>
-              ) : (
-                <span className="text-neutral-300">Naslednji →</span>
-              )}
-            </div>
-          </div>
+        {nextSlug ? (
+          <Link
+            href={`/reference/${nextSlug}`}
+            className="transition hover:text-neutral-900"
+          >
+            Naslednji →
+          </Link>
+        ) : (
+          <span className="text-neutral-300">Naslednji →</span>
+        )}
+      </div>
+    </div>
 
-          <Reveal variant="hero">
-            <PageHero
-              className="max-w-4xl mt-6 sm:mt-7"
-              title={title}
-              desc={subtitle}
-            />
-          </Reveal>
-        </header>
+    <Reveal variant="hero">
+      <PageHero
+        className="max-w-4xl mt-4 sm:mt-5"
+        title={title}
+        desc={subtitle}
+      />
+    </Reveal>
+  </header>
 
-        <Reveal variant="grid">
-          <section className="mt-8 grid gap-6 sm:mt-10 sm:gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[auto_auto] lg:gap-10">
-            <div className="order-1 overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-50 lg:row-start-1">
-              <Image
-                src={featuredImage}
-                alt={meta.location ? `${title} ${meta.location}` : title}
-                width={1600}
-                height={1000}
-                priority
-                sizes="(max-width: 1024px) 100vw, 66vw"
-                className="aspect-[4/3] w-full bg-neutral-100 object-cover lg:aspect-[16/10]"
-              />
-            </div>
-
-            <div className="order-3 self-start lg:order-2 lg:row-start-1 lg:sticky lg:top-24">
-              <ProjectMeta
-                categories={meta.categories ? [...meta.categories] : undefined}
-                client={meta.client}
-                location={meta.location}
-                workType={meta.workType}
-              />
-            </div>
-
-            <div className="order-2 lg:hidden">
-              <section className="scroll-mt-[calc(var(--header-h)+16px)] border-t border-neutral-200 pt-12">
-                <h2 className="text-xs font-medium uppercase tracking-[0.08em] text-neutral-400">
-                  Opis projekta
-                </h2>
-
-                {html ? (
-                  <div className="mt-7 max-w-[72ch]">
-                    <ProjectBody html={html} />
-                  </div>
-                ) : (
-                  <div className="mt-4 text-sm text-neutral-600">
-                    Opis bo dodan kmalu.
-                  </div>
-                )}
-              </section>
-            </div>
-
-            <div className="hidden border-t border-neutral-200 pt-10 lg:block lg:row-start-2">
-              <div className="max-w-[72ch]">
-                <h2 className="text-xs font-medium uppercase tracking-[0.08em] text-neutral-400">
-                  Opis projekta
-                </h2>
-
-                {html ? (
-                  <div className="mt-6">
-                    <ProjectBody html={html} />
-                  </div>
-                ) : (
-                  <div className="mt-4 text-sm text-neutral-600">
-                    Opis bo dodan kmalu.
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
-        </Reveal>
-
-        <Reveal variant="grid">
-          <nav className="mt-12 border-t border-neutral-200/70 py-6 sm:mt-14 sm:py-7">
-            <div className="flex items-center justify-between">
-              {prevSlug ? (
-                <Link
-                  href={`/reference/${prevSlug}`}
-                  aria-label="Prejšnji projekt"
-                  className="group inline-flex items-center gap-2 text-sm text-neutral-500 transition-colors duration-300 hover:text-neutral-900"
-                >
-                  <span className="text-base leading-none transition-transform duration-300 group-hover:-translate-x-0.5">
-                    ←
-                  </span>
-                  <span>Prejšnji</span>
-                </Link>
-              ) : (
-                <span className="inline-flex items-center gap-2 text-sm text-neutral-300">
-                  <span className="text-base leading-none">←</span>
-                  <span>Prejšnji</span>
-                </span>
-              )}
-
-              {nextSlug ? (
-                <Link
-                  href={`/reference/${nextSlug}`}
-                  aria-label="Naslednji projekt"
-                  className="group inline-flex items-center gap-2 text-sm text-neutral-500 transition-colors duration-300 hover:text-neutral-900"
-                >
-                  <span>Naslednji</span>
-                  <span className="text-base leading-none transition-transform duration-300 group-hover:translate-x-0.5">
-                    →
-                  </span>
-                </Link>
-              ) : (
-                <span className="inline-flex items-center gap-2 text-sm text-neutral-300">
-                  <span>Naslednji</span>
-                  <span className="text-base leading-none">→</span>
-                </span>
-              )}
-            </div>
-          </nav>
-        </Reveal>
-      </Container>
-
-      <div className="mt-16 sm:mt-20">
-        <RelatedProjectsEditorial
-          items={relatedItems}
-          title="Sorodne reference"
-          subtitle="Izbor projektov s podobnim programom ali tipom izvedbe."
+  <Reveal variant="grid">
+    <section className="mt-6 grid gap-6 sm:mt-7 sm:gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[auto_auto] lg:gap-10">
+      <div className="order-1 overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-50 lg:row-start-1">
+        <Image
+          src={featuredImage}
+          alt={meta.location ? `${title} ${meta.location}` : title}
+          width={1600}
+          height={1000}
+          priority
+          sizes="(max-width: 1024px) 100vw, 66vw"
+          className="aspect-[4/3] w-full bg-neutral-100 object-cover lg:aspect-[16/10]"
         />
       </div>
+
+      <div className="order-3 self-start lg:order-2 lg:row-start-1 lg:sticky lg:top-24">
+        <ProjectMeta
+          categories={meta.categories ? [...meta.categories] : undefined}
+          client={meta.client}
+          location={meta.location}
+          workType={meta.workType}
+        />
+      </div>
+
+      <div className="order-2 lg:hidden">
+        <section className="scroll-mt-[calc(var(--header-h)+16px)] border-t border-neutral-200 pt-6 sm:pt-8">
+          <h2 className="text-xs font-medium uppercase tracking-[0.08em] text-neutral-400">
+            Opis projekta
+          </h2>
+
+          {html ? (
+            <div className="mt-6 max-w-[72ch]">
+              <ProjectBody html={html} />
+            </div>
+          ) : (
+            <div className="mt-4 text-sm text-neutral-600">
+              Opis bo dodan kmalu.
+            </div>
+          )}
+        </section>
+      </div>
+
+      <div className="hidden border-t border-neutral-200 pt-8 lg:block lg:row-start-2">
+        <div className="max-w-[72ch]">
+          <h2 className="text-xs font-medium uppercase tracking-[0.08em] text-neutral-400">
+            Opis projekta
+          </h2>
+
+          {html ? (
+            <div className="mt-5">
+              <ProjectBody html={html} />
+            </div>
+          ) : (
+            <div className="mt-4 text-sm text-neutral-600">
+              Opis bo dodan kmalu.
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  </Reveal>
+
+  <Reveal variant="grid">
+    <nav className="mt-10 border-t border-neutral-200/70 py-6 sm:mt-12 sm:py-7">
+      <div className="flex items-center justify-between">
+        {prevSlug ? (
+          <Link
+            href={`/reference/${prevSlug}`}
+            aria-label="Prejšnji projekt"
+            className="group inline-flex items-center gap-2 text-sm text-neutral-500 transition-colors duration-300 hover:text-neutral-900"
+          >
+            <span className="text-base leading-none transition-transform duration-300 group-hover:-translate-x-0.5">
+              ←
+            </span>
+            <span>Prejšnji</span>
+          </Link>
+        ) : (
+          <span className="inline-flex items-center gap-2 text-sm text-neutral-300">
+            <span className="text-base leading-none">←</span>
+            <span>Prejšnji</span>
+          </span>
+        )}
+
+        {nextSlug ? (
+          <Link
+            href={`/reference/${nextSlug}`}
+            aria-label="Naslednji projekt"
+            className="group inline-flex items-center gap-2 text-sm text-neutral-500 transition-colors duration-300 hover:text-neutral-900"
+          >
+            <span>Naslednji</span>
+            <span className="text-base leading-none transition-transform duration-300 group-hover:translate-x-0.5">
+              →
+            </span>
+          </Link>
+        ) : (
+          <span className="inline-flex items-center gap-2 text-sm text-neutral-300">
+            <span>Naslednji</span>
+            <span className="text-base leading-none">→</span>
+          </span>
+        )}
+      </div>
+    </nav>
+  </Reveal>
+</Container>
+
+<div className="mt-10 sm:mt-12">
+  <RelatedProjectsEditorial
+    items={relatedItems}
+    title="Sorodne reference"
+    subtitle="Izbor projektov s podobnim programom ali tipom izvedbe."
+  />
+</div>
     </>
   );
 }

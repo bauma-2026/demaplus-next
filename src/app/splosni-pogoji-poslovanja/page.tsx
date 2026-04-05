@@ -14,13 +14,12 @@ export default function TermsPage() {
     <>
       <TermsHero />
 
-      <section className="section mt-4 sm:mt-6 pb-24 sm:pb-28">
-        <Container className="max-w-3xl">
+      <section className="py-10 sm:py-12">
+        <Container className="max-w-5xl">
           <div className="space-y-8 sm:space-y-10">
             <TermsAccordion />
 
-            {/* Signature block */}
-            <div className="mt-14 border-t border-neutral-200 pt-10 text-sm leading-relaxed text-neutral-700 sm:mt-16 sm:pt-12">
+            <div className="border-t border-neutral-200 pt-8 text-sm leading-relaxed text-neutral-700 sm:pt-10">
               <p>V Ljubljani, dne 11.3.2019</p>
 
               <p className="mt-6">
@@ -48,23 +47,26 @@ function TermsHero() {
           sizes="100vw"
           className="object-cover object-[50%_35%]"
         />
-
         <div className="absolute inset-0 bg-black/45" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
       </div>
 
-      <Container className="relative max-w-3xl py-20 sm:py-24">
-        <p className="text-xs tracking-wide text-white/70">Pravni okvir</p>
+      <Container className="relative py-14 sm:py-16 lg:py-18">
+        <div className="max-w-xl sm:max-w-3xl">
+          <p className="text-[12px] font-medium tracking-[0.08em] text-white/70">
+            Pravni okvir
+          </p>
 
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-          Splošni pogoji poslovanja
-        </h1>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+            Splošni pogoji poslovanja
+          </h1>
 
-        <p className="mt-4 text-base leading-relaxed text-white/80">
-          Splošni pogoji poslovanja družbe DEMA PLUS d.o.o. veljajo z dnem
-          sprejetja in neprekinjeno veljajo za vsa pogodbena razmerja družbe,
-          razen v primeru izrecne pisne izključitve splošnih pogojev.
-        </p>
+          <p className="mt-3 text-base leading-[1.55] text-white/80 sm:text-lg">
+            Splošni pogoji poslovanja družbe DEMA PLUS d.o.o. veljajo z dnem
+            sprejetja in neprekinjeno veljajo za vsa pogodbena razmerja družbe,
+            razen v primeru izrecne pisne izključitve splošnih pogojev.
+          </p>
+        </div>
       </Container>
     </section>
   );

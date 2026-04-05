@@ -60,11 +60,11 @@ export default function ReferenceGridCard({
         )}
       </div>
 
-      <div className="mt-3 text-[10px] uppercase tracking-[0.08em] text-neutral-400 leading-none">
+      <div className="mt-2.5 text-[10px] uppercase tracking-[0.08em] text-neutral-400 leading-none">
         {displayKicker}
       </div>
 
-      <h3 className="mt-1.5 text-[15px] sm:text-base font-semibold tracking-tight text-neutral-900 leading-snug line-clamp-2">
+      <h3 className="mt-1.5 text-[15px] font-semibold leading-snug tracking-tight text-neutral-900 line-clamp-2 sm:text-base">
         {title}
       </h3>
 
