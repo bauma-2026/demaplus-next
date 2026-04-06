@@ -224,32 +224,32 @@ export default async function ProjectDetail({ params }: PageProps) {
 
 const RELATED_FALLBACK_THUMB = "/og-default.jpg";
 
-const relatedItems = shuffleArray(
-  projects
-    .filter((p) => p.slug !== slug)
-    .map((p) => {
-      const m = projectMeta[p.slug as keyof typeof projectMeta];
-      const thumb = pickLocalHero(p.slug) ?? RELATED_FALLBACK_THUMB;
+type RelatedItem = {
+  slug: string;
+  title: string;
+  year?: string;
+  location?: string;
+  workType?: string;
+  thumb: string;
+};
 
-      return {
-        slug: p.slug,
-        title: decodeHtmlEntities(p.title) ?? p.title,
-        year: (m?.year as string | undefined) ?? undefined,
-        location: (m?.location as string | undefined) ?? undefined,
-        workType: (m?.workType as string | undefined) ?? undefined,
-        thumb,
-      };
-    })
-    .slice(0, 6) as {
-    slug: string;
-    title: string;
-    year?: string;
-    location?: string;
-    workType?: string;
-    thumb: string;
-  }[]
-);
+const relatedPool: RelatedItem[] = projects
+  .filter((p) => p.slug !== slug)
+  .map((p) => {
+    const m = projectMeta[p.slug as keyof typeof projectMeta];
+    const thumb = pickLocalHero(p.slug) ?? RELATED_FALLBACK_THUMB;
 
+    return {
+      slug: p.slug,
+      title: decodeHtmlEntities(p.title) ?? p.title,
+      year: (m?.year as string | undefined) ?? undefined,
+      location: (m?.location as string | undefined) ?? undefined,
+      workType: (m?.workType as string | undefined) ?? undefined,
+      thumb,
+    };
+  });
+
+const relatedItems = shuffleArray(relatedPool).slice(0, 6);
   const url = `${SITE_URL}/reference/${project.slug}`;
   const jsonLd = jsonLdForProject({
     title,

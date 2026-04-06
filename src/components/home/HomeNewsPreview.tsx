@@ -10,7 +10,7 @@ const latestPost = {
 };
 
 export default function HomeNewsPreview() {
-  const href = `/${latestPost.slug}`;
+const href = `/novice/${latestPost.slug}`;
 
   return (
 <section className="relative overflow-hidden section-shell-tight border-b border-footer bg-[var(--footer-bg)]">

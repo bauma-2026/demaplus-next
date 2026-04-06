@@ -285,21 +285,28 @@ export default function ReferenceGrid({
       </div>
     ) : canLoadMore ? (
       <div className="mt-14 flex justify-center">
-        <button
-          type="button"
-          onClick={() =>
-            setVisible((v) => Math.min(v + step, filteredItems.length))
-          }
-          className="group inline-flex min-w-[154px] items-center justify-center gap-2.5 rounded-full border border-neutral-300 bg-white px-6 py-3 text-sm font-medium text-neutral-900 transition-all duration-300 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900/10 active:scale-[0.98]"
-        >
-          <span>Naloži več</span>
-          <span
-            aria-hidden
-            className="transition-transform duration-300 group-hover:translate-x-0.5"
-          >
-            →
-          </span>
-        </button>
+       <button
+  type="button"
+onClick={() => {
+  if (syncUrl && activeFilter === "all" && step > 0) {
+    const nextPage = Math.max(1, Math.ceil(visible / step) + 1);
+    const href = `${basePath}?page=${nextPage}`;
+    router.push(href, { scroll: false });
+    return;
+  }
+
+  setVisible((v) => Math.min(v + step, filteredItems.length));
+}}
+  className="group inline-flex min-w-[154px] items-center justify-center gap-2.5 rounded-full border border-neutral-300 bg-white px-6 py-3 text-sm font-medium text-neutral-900 transition-all duration-300 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900/10 active:scale-[0.98]"
+>
+  <span>Naloži več</span>
+  <span
+    aria-hidden
+    className="transition-transform duration-300 group-hover:translate-x-0.5"
+  >
+    →
+  </span>
+</button>
       </div>
     ) : (
       <div className="mt-12 text-center text-sm text-neutral-400">
